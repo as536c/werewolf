@@ -7,13 +7,15 @@ import wroles
 import waction
 
 BG = (0, 0, 139)
-FPS = 30
+FPS = 10
 
 p1_state = ['alive']
 p2_state = ['alive']
 p3_state = ['alive']
 p4_state = ['alive']
 p5_state = ['alive']
+
+time_state = ['night']
 
 r = range(5, 11)
 players = 0
@@ -44,12 +46,28 @@ if players == 5:
 
 
     def draw_window():
-        WIN.fill(BG)
+        
         player1 = wbutton.Button(10,530,wroles.role[1])
         player2 = wbutton.Button(10,10,wroles.role[2])
         player3 = wbutton.Button(220,10,wroles.role[3])
         player4 = wbutton.Button(430,10,wroles.role[4])
         player5 = wbutton.Button(430,530,wroles.role[5])
+        switchtime = wbutton.Button(220,430,wroles.role[6])
+        
+        if switchtime.draw_button(WIN):
+            print('click')
+            if time_state[0] == 'night':
+                time_state[0] = 'day'
+            elif time_state[0] == 'day':
+                time_state[0] = 'night'
+            print(time_state)
+        
+        if time_state[0] == 'night':
+            BG = (0, 0, 139)
+            WIN.fill(BG)
+        elif time_state[0] == 'day':
+            BG = (255, 255, 51)
+            WIN.fill(BG)
 
         if player1.draw_button(WIN):
             print('player 1')
@@ -901,8 +919,8 @@ if players == 6:
                     print('conceal')
 
             elif wroles.role[1] == wroles.wolftrickster:
-                if waction.deceivebutton.draw_button(WIN):
-                    print('deceive')
+                if waction.trickbutton.draw_button(WIN):
+                    print('trick')
         
         elif wroles.role[1] == wroles.seer:
             if waction.checkbutton.draw_button(WIN):
@@ -973,8 +991,8 @@ if players == 7:
                     print('conceal')
 
             elif wroles.role[1] == wroles.wolftrickster:
-                if waction.deceivebutton.draw_button(WIN):
-                    print('deceive')
+                if waction.trickbutton.draw_button(WIN):
+                    print('trick')
         
         elif wroles.role[1] == wroles.seer:
             if waction.checkbutton.draw_button(WIN):
@@ -1048,8 +1066,8 @@ if players == 8:
                     print('conceal')
 
             elif wroles.role[1] == wroles.wolftrickster:
-                if waction.deceivebutton.draw_button(WIN):
-                    print('deceive')
+                if waction.trickbutton.draw_button(WIN):
+                    print('trick')
         
         elif wroles.role[1] == wroles.seer:
             if waction.checkbutton.draw_button(WIN):
@@ -1126,8 +1144,8 @@ if players == 9:
                     print('conceal')
 
             elif wroles.role[1] == wroles.wolftrickster:
-                if waction.deceivebutton.draw_button(WIN):
-                    print('deceive')
+                if waction.trickbutton.draw_button(WIN):
+                    print('trick')
         
         elif wroles.role[1] == wroles.seer:
             if waction.checkbutton.draw_button(WIN):
@@ -1207,8 +1225,8 @@ if players == 10:
                     print('conceal')
 
             elif wroles.role[1] == wroles.wolftrickster:
-                if waction.deceivebutton.draw_button(WIN):
-                    print('deceive')
+                if waction.trickbutton.draw_button(WIN):
+                    print('trick')
         
         elif wroles.role[1] == wroles.seer:
             if waction.checkbutton.draw_button(WIN):
