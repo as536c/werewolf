@@ -6,22 +6,27 @@ import os
 #Wolves
 # + any wolf can kill another villager with assassinate ONCE if correctly guessed a role, but dies if role is wrong
 # + assassinate can only be used ONCE
-#      wolf: kills at night 
-#      alpha: unknown to seer; c
-#      wolf trickster: can reverse a role of a player each night, unknown will remain unknown: trick
+#      (b) wolf: kills at night 
+#      (u) alpha: unknown to seer; c
+#      (b) wolf trickster: can reverse a role of a player each night, unknown will remain unknown: trick
 #
 #Villagers
-#      seer: can check players if good or bad
-#      medium: can speak to the dead
-#      bodyguard: can protect/has 2 lives
-#      sheriff: can kill player during daytime
-#      doctor: can revive a player once
-#      villager: no power
+#      (g) seer: can check players if good or bad
+#      (g) super seer: can see roles
+#      (g) silencer: can silence a chat/voice
+#      (u) medium: can speak to the dead
+#      (g) bodyguard: can protect/has 2 lives
+#      (g) sheriff: can kill player during daytime
+#      (g) doctor: can revive a player once
+#      (g) villager: no power
+#      (u) jailer: can jail player and restrict user powers
+#      (g) priest: can splash holy water during day or night, if wolf, wolf will die. if not, priest will die.
 #
 #Wildcards
 #
-#      fool: only wins if got voted out
-#      hunter: wins when target gets voted out
+#      (u) fool: only wins if got voted out
+#      (u) hunter: wins when target gets voted out
+#      (u) arsonist: can put gasoline/or ignite
 
 #killed
 invisible = pygame.image.load(os.path.join('assets','invisible.png'))

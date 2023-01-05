@@ -7,7 +7,7 @@ import wroles
 import waction
 
 BG = (0, 0, 139)
-FPS = 10
+FPS = 15
 
 p1_state = ['alive']
 p2_state = ['alive']
@@ -19,6 +19,9 @@ time_state = ['night']
 
 r = range(5, 11)
 players = 0
+
+print('Werewolf')
+
 while players not in r:     
     while True:
         try:
@@ -52,25 +55,27 @@ if players == 5:
         player3 = wbutton.Button(220,10,wroles.role[3])
         player4 = wbutton.Button(430,10,wroles.role[4])
         player5 = wbutton.Button(430,530,wroles.role[5])
-        switchtime = wbutton.Button(220,430,wroles.role[6])
-        
-        if switchtime.draw_button(WIN):
-            print('click')
-            if time_state[0] == 'night':
-                time_state[0] = 'day'
-            elif time_state[0] == 'day':
-                time_state[0] = 'night'
-            print(time_state)
+        switchtime1 = wbutton.Button(220,680,waction.shoot)
+        switchtime2 = wbutton.Button(220,730,waction.trick)
         
         if time_state[0] == 'night':
             BG = (0, 0, 139)
             WIN.fill(BG)
+            if switchtime1.draw_button(WIN):
+                print('click')
+                time_state[0] = 'day'
+                print(time_state)
         elif time_state[0] == 'day':
             BG = (255, 255, 51)
             WIN.fill(BG)
+            if switchtime2.draw_button(WIN):
+                print('click')
+                time_state[0] = 'night'
+                print(time_state)
 
         if player1.draw_button(WIN):
             print('player 1')
+            print(p1_state)
             if waction.action == 'checking':
                 if wroles.role[1] in wroles.bad_check:
                     if 'tricked' in p1_state:
@@ -830,48 +835,49 @@ if players == 5:
                 else:
                     print('player is already dead!')
 
-        if wroles.role[1] in wroles.bad2:
-            if waction.killbutton.draw_button(WIN):
-                print('kill')
-                waction.action = 'killing'
-            if waction.assassinatebutton.draw_button(WIN):
-                print('assassinate')
-                waction.action = 'assassinating'
+        if time_state[0] == 'night':
+            if wroles.role[1] in wroles.bad2:
+                if waction.killbutton.draw_button(WIN):
+                    print('kill')
+                    waction.action = 'killing'
+                if waction.assassinatebutton.draw_button(WIN):
+                    print('assassinate')
+                    waction.action = 'assassinating'
 
-            if wroles.role[1] == wroles.alpha:
-                if waction.concealbutton.draw_button(WIN):
-                    print('conceal')
-                    waction.action = 'concealing'
+                if wroles.role[1] == wroles.alpha:
+                    if waction.concealbutton.draw_button(WIN):
+                        print('conceal')
+                        waction.action = 'concealing'
 
-            elif wroles.role[1] == wroles.wolftrickster:
-                if waction.trickbutton.draw_button(WIN):
-                    print('trick')
-                    waction.action = 'tricking'
-        
-        elif wroles.role[1] == wroles.seer:
-            if waction.checkbutton.draw_button(WIN):
-                print('check')
-                waction.action = 'checking'
+                elif wroles.role[1] == wroles.wolftrickster:
+                    if waction.trickbutton.draw_button(WIN):
+                        print('trick')
+                        waction.action = 'tricking'
+            
+            elif wroles.role[1] == wroles.seer:
+                if waction.checkbutton.draw_button(WIN):
+                    print('check')
+                    waction.action = 'checking'
 
-        elif wroles.role[1] == wroles.medium:
-            if waction.seedeadbutton.draw_button(WIN):
-                print('see dead')
-                waction.action = 'seeing'
+            elif wroles.role[1] == wroles.medium:
+                if waction.seedeadbutton.draw_button(WIN):
+                    print('see dead')
+                    waction.action = 'seeing'
 
-        elif wroles.role[1] == wroles.bodyguard:
-            if waction.protectbutton.draw_button(WIN):
-                print('protect')
-                waction.action = 'protecting'
+            elif wroles.role[1] == wroles.bodyguard:
+                if waction.protectbutton.draw_button(WIN):
+                    print('protect')
+                    waction.action = 'protecting'
 
-        elif wroles.role[1] == wroles.sheriff:
-            if waction.shootbutton.draw_button(WIN):
-                print('shoot')
-                waction.action = 'shooting'
+            elif wroles.role[1] == wroles.sheriff:
+                if waction.shootbutton.draw_button(WIN):
+                    print('shoot')
+                    waction.action = 'shooting'
 
-        elif wroles.role[1] == wroles.doctor:
-            if waction.revivebutton.draw_button(WIN):
-                print('revive')
-                waction.action = 'reviving'
+            elif wroles.role[1] == wroles.doctor:
+                if waction.revivebutton.draw_button(WIN):
+                    print('revive')
+                    waction.action = 'reviving'
 
 if players == 6:
     WIDTH, HEIGHT = 640, 790
