@@ -2,27 +2,29 @@ import pygame
 import os
 import wbutton
 
+path = "/Users/tempuser/Ferd/Werewolf/werewolf_project/assets"
+
 action = '' #action to take when clicking on player cards; killing,checking,reviving
 state = '' #player state; protected, concealed, deceived, dead
 
-seedead = pygame.image.load(os.path.join('assets','seedead.png'))
-shoot = pygame.image.load(os.path.join('assets','shoot.png'))
-trick = pygame.image.load(os.path.join('assets','deceive.png'))
-conceal = pygame.image.load(os.path.join('assets','conceal.png'))
-assassinate = pygame.image.load(os.path.join('assets','assassinate.png'))
-revive = pygame.image.load(os.path.join('assets','revive.png'))
-check = pygame.image.load(os.path.join('assets','check.png'))
-protect = pygame.image.load(os.path.join('assets','protect.png'))
-kill = pygame.image.load(os.path.join('assets','kill.png'))
+seedead = pygame.image.load(os.path.join(path,'seedead.png'))
+shoot = pygame.image.load(os.path.join(path,'shoot.png'))
+trick = pygame.image.load(os.path.join(path,'deceive.png'))
+conceal = pygame.image.load(os.path.join(path,'conceal.png'))
+assassinate = pygame.image.load(os.path.join(path,'assassinate.png'))
+revive = pygame.image.load(os.path.join(path,'revive.png'))
+check = pygame.image.load(os.path.join(path,'check.png'))
+protect = pygame.image.load(os.path.join(path,'protect.png'))
+kill = pygame.image.load(os.path.join(path,'kill.png'))
 
-assvillager = pygame.image.load(os.path.join('assets','assvillager.png'))
-assseer = pygame.image.load(os.path.join('assets','assseer.png'))
-assmedium = pygame.image.load(os.path.join('assets','assmedium.png'))
-assbodyguard = pygame.image.load(os.path.join('assets','assbodyguard.png'))
-assdoctor = pygame.image.load(os.path.join('assets','assdoctor.png'))
-asssheriff = pygame.image.load(os.path.join('assets','asssheriff.png'))
-assfool = pygame.image.load(os.path.join('assets','assfool.png'))
-asshunter = pygame.image.load(os.path.join('assets','asshunter.png'))
+assvillager = pygame.image.load(os.path.join(path,'assvillager.png'))
+assseer = pygame.image.load(os.path.join(path,'assseer.png'))
+assmedium = pygame.image.load(os.path.join(path,'assmedium.png'))
+assbodyguard = pygame.image.load(os.path.join(path,'assbodyguard.png'))
+assdoctor = pygame.image.load(os.path.join(path,'assdoctor.png'))
+asssheriff = pygame.image.load(os.path.join(path,'asssheriff.png'))
+assfool = pygame.image.load(os.path.join(path,'assfool.png'))
+asshunter = pygame.image.load(os.path.join(path,'asshunter.png'))
 
 killbutton = wbutton.Button(220,530, kill)
 assassinatebutton = wbutton.Button(220,590, assassinate)
