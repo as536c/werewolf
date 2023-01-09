@@ -29,18 +29,21 @@ import os
 #      (u) arsonist: can put gasoline/or ignite
 
 #killed
-invisible = pygame.image.load(os.path.join('assets','invisible.png'))
-wolf = pygame.image.load(os.path.join('assets','wolf.png'))
-alpha = pygame.image.load(os.path.join('assets','alpha.png'))
-wolftrickster = pygame.image.load(os.path.join('assets','wolftrickster.png'))
-villager = pygame.image.load(os.path.join('assets','villager.png'))
-seer = pygame.image.load(os.path.join('assets','seer.png'))
-medium = pygame.image.load(os.path.join('assets','medium.png'))
-bodyguard = pygame.image.load(os.path.join('assets','bodyguard.png'))
-sheriff = pygame.image.load(os.path.join('assets','sheriff.png'))
-doctor = pygame.image.load(os.path.join('assets','doctor.png'))
-fool = pygame.image.load(os.path.join('assets','fool.png'))
-hunter = pygame.image.load(os.path.join('assets','hunter.png'))
+
+path = "werewolf_project/assets/"
+
+invisible = pygame.image.load(os.path.join(path, 'invisible.png'))
+wolf = pygame.image.load(os.path.join(path,'wolf.png'))
+alpha = pygame.image.load(os.path.join(path,'alpha.png'))
+wolftrickster = pygame.image.load(os.path.join(path,'wolftrickster.png'))
+villager = pygame.image.load(os.path.join(path,'villager.png'))
+seer = pygame.image.load(os.path.join(path,'seer.png'))
+medium = pygame.image.load(os.path.join(path,'medium.png'))
+bodyguard = pygame.image.load(os.path.join(path,'bodyguard.png'))
+sheriff = pygame.image.load(os.path.join(path,'sheriff.png'))
+doctor = pygame.image.load(os.path.join(path,'doctor.png'))
+fool = pygame.image.load(os.path.join(path,'fool.png'))
+hunter = pygame.image.load(os.path.join(path,'hunter.png'))
 
 wildcard = [fool, hunter]
 bad = [wolf, alpha, wolftrickster]
