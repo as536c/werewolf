@@ -30,7 +30,7 @@ import os
 
 #killed
 
-path = "/Users/tempuser/Ferd/Werewolf/werewolf_project/assets"
+path = "werewolf_project/assets/"
 
 invisible = pygame.image.load(os.path.join(path, 'invisible.png'))
 wolf = pygame.image.load(os.path.join(path,'wolf.png'))
