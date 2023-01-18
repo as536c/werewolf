@@ -2,7 +2,7 @@ import pygame
 import os
 import wbutton
 
-path = "werewolf_project/assets/"
+path = "assets/"
 
 action = '' #action to take when clicking on player cards; killing,checking,reviving
 state = '' #player state; protected, concealed, deceived, dead
