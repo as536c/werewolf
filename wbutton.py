@@ -1,5 +1,7 @@
 import pygame
 
+message = "hehe"
+
 class Button:
     def __init__(self, x, y, image):
         self.image = image
@@ -12,6 +14,7 @@ class Button:
         pos = pygame.mouse.get_pos()
 
         if self.rect.collidepoint(pos):
+            print(message)
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
                 self.clicked = True
                 action = True

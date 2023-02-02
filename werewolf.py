@@ -7,6 +7,9 @@ import wroles
 import waction
 
 BG = (0, 0, 139)
+white = (255, 255, 255)
+green = (0, 255, 0)
+blue = (0, 0, 128)
 FPS = 15
 
 p1_state = ['alive']
@@ -31,11 +34,21 @@ while players not in r:
         else:
             break
 
-if players == 5:
-    WIDTH, HEIGHT = 640, 790
-    WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("Werewolf")
+message = ["hehe"]
 
+if players == 5:
+    challenger = 4
+    WIDTH, HEIGHT = 640, 790
+    # WIN = main window of game
+    WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+    pygame.init()
+    font = pygame.font.Font('freesansbold.ttf', 25)
+    text = font.render(message[0], True, green, blue)
+    textRect = text.get_rect()
+    textRect.center = (WIDTH // 2, HEIGHT // 2)
+    pygame.display.set_caption("Werewolf")
+    pygame.init()
+    font = pygame.font.Font('freesansbold.ttf', 32)
     roles = [wroles.bad, wroles.villager, wroles.doctor, wroles.seer, wroles.wildcard]
 
     for n in range(1, players + 1):
@@ -49,15 +62,35 @@ if players == 5:
 
 
     def draw_window():
-        
-        player1 = wbutton.Button(10,530,wroles.role[1])
-        player2 = wbutton.Button(10,10,wroles.role[2])
-        player3 = wbutton.Button(220,10,wroles.role[3])
-        player4 = wbutton.Button(430,10,wroles.role[4])
-        player5 = wbutton.Button(430,530,wroles.role[5])
+        #turns all player card to invisible
+        player1 = wbutton.Button(10,530,wroles.invisible)
+        player2 = wbutton.Button(10,10,wroles.invisible)
+        player3 = wbutton.Button(220,10,wroles.invisible)
+        player4 = wbutton.Button(430,10,wroles.invisible)
+        player5 = wbutton.Button(430,530,wroles.invisible)
         switchtime1 = wbutton.Button(220,680,waction.shoot)
         switchtime2 = wbutton.Button(220,730,waction.trick)
-        
+
+        #player1 = wbutton.Button(10,530,wroles.role[1])
+        #player2 = wbutton.Button(10,10,wroles.role[2])
+        #player3 = wbutton.Button(220,10,wroles.role[3])
+        #player4 = wbutton.Button(430,10,wroles.role[4])
+        #player5 = wbutton.Button(430,530,wroles.role[5])
+        #switchtime1 = wbutton.Button(220,680,waction.shoot)
+        #switchtime2 = wbutton.Button(220,730,waction.trick)
+
+        # only player card will be visible
+        if challenger == 1:
+            player1 = wbutton.Button(10,530,wroles.role[1])
+        elif challenger == 2:
+            player2 = wbutton.Button(10,10,wroles.role[2])
+        elif challenger == 3:
+            player3 = wbutton.Button(220,10,wroles.role[3])
+        elif challenger == 4:
+            player4 = wbutton.Button(430,10,wroles.role[4])
+        elif challenger == 5:
+            player5 = wbutton.Button(430,530,wroles.role[5])
+
         if time_state[0] == 'night':
             BG = (0, 0, 139)
             WIN.fill(BG)
@@ -74,6 +107,7 @@ if players == 5:
                 print(time_state)
 
         if player1.draw_button(WIN):
+            wbutton.message = "herher"
             print('player 1')
             print(p1_state)
             if waction.action == 'checking':
@@ -835,8 +869,9 @@ if players == 5:
                 else:
                     print('player is already dead!')
 
+        # update to only show challenger skills, not the first player's skills
         if time_state[0] == 'night':
-            if wroles.role[1] in wroles.bad2:
+            if wroles.role[challenger] in wroles.bad2:
                 if waction.killbutton.draw_button(WIN):
                     print('kill')
                     waction.action = 'killing'
@@ -844,37 +879,37 @@ if players == 5:
                     print('assassinate')
                     waction.action = 'assassinating'
 
-                if wroles.role[1] == wroles.alpha:
+                if wroles.role[challenger] == wroles.alpha:
                     if waction.concealbutton.draw_button(WIN):
                         print('conceal')
                         waction.action = 'concealing'
 
-                elif wroles.role[1] == wroles.wolftrickster:
+                elif wroles.role[challenger] == wroles.wolftrickster:
                     if waction.trickbutton.draw_button(WIN):
                         print('trick')
                         waction.action = 'tricking'
             
-            elif wroles.role[1] == wroles.seer:
+            elif wroles.role[challenger] == wroles.seer:
                 if waction.checkbutton.draw_button(WIN):
                     print('check')
                     waction.action = 'checking'
 
-            elif wroles.role[1] == wroles.medium:
+            elif wroles.role[challenger] == wroles.medium:
                 if waction.seedeadbutton.draw_button(WIN):
                     print('see dead')
                     waction.action = 'seeing'
 
-            elif wroles.role[1] == wroles.bodyguard:
+            elif wroles.role[challenger] == wroles.bodyguard:
                 if waction.protectbutton.draw_button(WIN):
                     print('protect')
                     waction.action = 'protecting'
 
-            elif wroles.role[1] == wroles.sheriff:
+            elif wroles.role[challenger] == wroles.sheriff:
                 if waction.shootbutton.draw_button(WIN):
                     print('shoot')
                     waction.action = 'shooting'
 
-            elif wroles.role[1] == wroles.doctor:
+            elif wroles.role[challenger] == wroles.doctor:
                 if waction.revivebutton.draw_button(WIN):
                     print('revive')
                     waction.action = 'reviving'
