@@ -10,7 +10,7 @@ BG = (0, 0, 139)
 white = (255, 255, 255)
 green = (0, 255, 0)
 blue = (0, 0, 128)
-FPS = 15
+FPS = 5
 
 p1_state = ['alive']
 p2_state = ['alive']
@@ -34,21 +34,13 @@ while players not in r:
         else:
             break
 
-message = ["hehe"]
-
 if players == 5:
+    message = ['hehe']
     challenger = 4
     WIDTH, HEIGHT = 640, 790
     # WIN = main window of game
     WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.init()
-    font = pygame.font.Font('freesansbold.ttf', 25)
-    text = font.render(message[0], True, green, blue)
-    textRect = text.get_rect()
-    textRect.center = (WIDTH // 2, HEIGHT // 2)
     pygame.display.set_caption("Werewolf")
-    pygame.init()
-    font = pygame.font.Font('freesansbold.ttf', 32)
     roles = [wroles.bad, wroles.villager, wroles.doctor, wroles.seer, wroles.wildcard]
 
     for n in range(1, players + 1):
@@ -107,21 +99,24 @@ if players == 5:
                 print(time_state)
 
         if player1.draw_button(WIN):
-            wbutton.message = "herher"
-            print('player 1')
-            print(p1_state)
+            message.pop(0)
+            message.append('player1')
             if waction.action == 'checking':
                 if wroles.role[1] in wroles.bad_check:
                     if 'tricked' in p1_state:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('player is good')
                     else:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('player is bad')
                     waction.action = ''
                 elif wroles.role[1] in wroles.good_check:
                     if 'tricked' in p1_state:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('player is bad')
                     else:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('player is good')
                     waction.action = ''
                 elif wroles.role[1] in wroles.unknown_check:  
                     print('player side is unknown')
@@ -1291,15 +1286,21 @@ if players == 10:
 
 def main():
     clock = pygame.time.Clock()
-
     run = True
     while run:
+        
         clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
         draw_window()
+        pygame.init()
+        font = pygame.font.Font('freesansbold.ttf', 25)
+        text = font.render(message[0], True, green, blue)
+        textRect = text.get_rect()
+        textRect.center = (WIDTH // 2, HEIGHT // 2)
+        WIN.blit(text, textRect)
         pygame.display.update()
 
     pygame.quit()
