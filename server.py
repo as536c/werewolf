@@ -58,6 +58,7 @@ server_socket.bind((HOST, PORT))
 server_socket.listen()
 print(f'[*] Listening on {HOST}:{PORT}')
 challenger = 1
+#connects players
 while challenger < 3:
     try:
         client_socket, address = server_socket.accept()
@@ -71,6 +72,7 @@ while challenger < 3:
         client_socket.send(chal_bytes)
         challenger += 1
         print("Player name:", x)    
+        client_socket.close()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
         print('\nClosing Server Socket...')
         #remove appended roles in wroles.py, for a fresh start
@@ -81,12 +83,18 @@ while challenger < 3:
             fp.writelines(lines[:-6])
         server_socket.close()
         sys.exit()
+#after players connect, this segment should be server constantly accepting commands from client. (not working)     
+server_socket.close()
+udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udp_socket.bind((HOST, PORT))
+print('bound')
 try:
     while True:
-        for eachsocket,client in clients.iteritems():
-            com = client.recv(512).decode('utf-8')
-            print('com') 
-except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
+        data, client = udp_socket.recvfrom (1024)
+        com = data.decode("utf-8")
+        print(com) 
+        udp_socket.sendto(b'from server', client)
+except KeyboardInterrupt or ConnectionResetError or BrokenPipeError or OSError:
     print('\nClosing Server Socket...')
     #remove appended roles in wroles.py, for a fresh start
     with open("wroles.py", 'r+') as fp:
@@ -94,7 +102,7 @@ except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
         fp.seek(0)
         fp.truncate()
         fp.writelines(lines[:-6])
-    server_socket.close()
+    udp_socket.close()
     sys.exit()
     #send toggle info to clients
     #while True:

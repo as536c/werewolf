@@ -77,6 +77,8 @@ print("Hello, " + player_name + "! You are player", challenger_byte)
 challenger = int(challenger_byte)
 #svrcommand = bytes(command, 'utf-8')
 
+client_socket.close()
+
 if players == 5:
     message = ['hehe']
     WIDTH, HEIGHT = 640, 790
@@ -202,7 +204,12 @@ if players == 5:
                     waction.action = 'reviving'
 
         if player1.draw_button(WIN):
-            client_socket.sendall(b'hello')
+            udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            udp_socket.connect((HOST, PORT))
+            udp_socket.send(b'hello')
+            reply = udp_socket.recv(512).decode('utf-8')
+            print(reply)
+            udp_socket.close()
             message.pop(0)
             message.append('player1')
             if waction.action == 'checking':
