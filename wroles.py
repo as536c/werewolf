@@ -32,6 +32,7 @@ import os
 
 path = "assets/"
 
+dead = pygame.image.load(os.path.join(path, 'dead.png'))
 invisible = pygame.image.load(os.path.join(path, 'invisible.png'))
 wolf = pygame.image.load(os.path.join(path,'wolf.png'))
 alpha = pygame.image.load(os.path.join(path,'alpha.png'))
@@ -53,15 +54,5 @@ bad_check = [wolf, wolftrickster]
 unknown_check = [fool, hunter, sheriff, alpha]
 good_check = [villager, seer, medium, bodyguard, doctor]
 
+#it's supposed to look like that, server will append/deletes roles
 role = {
- 1: villager,
- 2: villager,
- 3: villager,
- 4: villager,
- 5: villager,
- 6: villager,
- 7: villager,
- 8: villager,
- 9: villager,
- 10: villager
-}
