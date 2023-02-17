@@ -1,11 +1,11 @@
 from argparse import Action
 from cgitb import text
 import pygame
-import random
 import wbutton
 import wroles
 import waction
 import time
+import threading
 
 BG = (0, 0, 139)
 white = (255, 255, 255)
@@ -42,6 +42,7 @@ import socket
 
 HOST = '127.0.0.1'
 PORT = 5555
+PORT2 = 5556
 
 #command = 'hello'
 player_name = input("Enter name: ")
@@ -69,6 +70,7 @@ response = client_socket.recv(4096)
 #print("Received:", response.decode("utf-8"))
 challenger_byte = response.decode("utf-8")
 print("Hello, " + player_name + "! You are player", challenger_byte)
+print("Waiting for other players. Please wait while the game initialize...")
 
 # receive toggle info from server
 #toggle = client_socket.recv(1024).decode()
@@ -78,6 +80,9 @@ challenger = int(challenger_byte)
 #svrcommand = bytes(command, 'utf-8')
 
 client_socket.close()
+time.sleep(8)
+tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcp_socket.connect((HOST, PORT2))
 
 if players == 5:
     message = ['hehe']
@@ -95,8 +100,9 @@ if players == 5:
     #        wroles.bad.remove(wroles.role[n])
     #    if wroles.role[n] == wroles.wildcard:
     #        wroles.role[n] = random.choice(wroles.wildcard)
-
+    
     def draw_window():
+        
         #turns all player card to invisible
         if 'dead' in p1_state:
             player1 = wbutton.Button(10,530,wroles.dead)
@@ -204,12 +210,10 @@ if players == 5:
                     waction.action = 'reviving'
 
         if player1.draw_button(WIN):
-            udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            udp_socket.connect((HOST, PORT))
-            udp_socket.send(b'hello')
-            reply = udp_socket.recv(512).decode('utf-8')
-            print(reply)
-            udp_socket.close()
+            tcp_socket.send(b'hello')
+            reply = tcp_socket.recv(512).decode('utf-8')
+            if reply == 'hello':
+                time_state[0] = 'day'
             message.pop(0)
             message.append('player1')
             if waction.action == 'checking':
@@ -1004,9 +1008,20 @@ def main():
         textRect.center = (WIDTH // 2, HEIGHT // 2)
         WIN.blit(text, textRect)
         pygame.display.update()
-
     client_socket.close()
     pygame.quit()
 
+def sync():
+    time.sleep(5)
+    while True:
+        tcp_socket.send(b'sync')
+        reply = tcp_socket.recv(512).decode('utf-8')
+        print(reply)
+        time.sleep(5)
+
+syncwerewolf = threading.Thread(name='background', target=sync)
+mainwerewolf = threading.Thread(name='foreground', target=main)
+
 if __name__ == "__main__":
+    syncwerewolf.start()
     main()

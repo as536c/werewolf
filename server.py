@@ -1,6 +1,8 @@
 import socket
 import sys
 import random
+import threading
+import time
 
 #this will append roles in wroles.py file upon server startup. this is to ensure that there will be similar roles across players
 wildcard = ['fool', 'hunter']
@@ -50,29 +52,19 @@ p5_state = ['alive']
 
 HOST = '127.0.0.1'
 PORT = 5555
+PORT2 = 5556
 clients = {}
+challenger = 1
 
 #TCP server
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((HOST, PORT))
-server_socket.listen()
+server_socket.listen(5)
 print(f'[*] Listening on {HOST}:{PORT}')
-challenger = 1
 #connects players
 while challenger < 3:
     try:
         client_socket, address = server_socket.accept()
-        print(f'[*] Accepted connection from {address[0]}:{address[1]}')
-        clients[address] = client_socket
-        request = client_socket.recv(512)
-        print(f'[*] Received: {request.decode("utf-8")}')
-        x = request.decode("utf-8")
-        chal_str = str(challenger)
-        chal_bytes = chal_str.encode()
-        client_socket.send(chal_bytes)
-        challenger += 1
-        print("Player name:", x)    
-        client_socket.close()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
         print('\nClosing Server Socket...')
         #remove appended roles in wroles.py, for a fresh start
@@ -82,28 +74,89 @@ while challenger < 3:
             fp.truncate()
             fp.writelines(lines[:-6])
         server_socket.close()
-        sys.exit()
-#after players connect, this segment should be server constantly accepting commands from client. (not working)     
+        sys.exit()    
+    clients[address] = client_socket
+    print(f'[*] Accepted connection from {address[0]}:{address[1]}')   
+    request = client_socket.recv(1024)
+    chal_str = str(challenger)
+    chal_bytes = chal_str.encode()
+    challenger += 1
+    client_socket.send(chal_bytes)
+    x = request.decode("utf-8")
+    print("Player name:", x)  
+    client_socket.close()
+
 server_socket.close()
-udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udp_socket.bind((HOST, PORT))
-print('bound')
-try:
-    while True:
-        data, client = udp_socket.recvfrom (1024)
-        com = data.decode("utf-8")
-        print(com) 
-        udp_socket.sendto(b'from server', client)
-except KeyboardInterrupt or ConnectionResetError or BrokenPipeError or OSError:
-    print('\nClosing Server Socket...')
+print('Initializing...')
+time.sleep(5)
+
+tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tcp_socket.bind((HOST, PORT2))
+tcp_socket.listen(5)
+print('[*] Game initiated. Press Ctrl-C to Exit')
+
+def handle_client(tcp_socket):
+    with tcp_socket as sock:
+        while True:
+            com = sock.recv(1024)
+            if com.decode('utf-8') == 'sync':
+                sock.send(com)
+                print('sync')
+            else:
+                for c in clients.keys():
+                    sock.sendto(com, c)
+                    print('sent to', c)    
+                    time.sleep(1)
+
+while True:
+    try:
+        client, tcp_address = tcp_socket.accept()        
+    except KeyboardInterrupt:                        
+        print("\nClosing Server Socket...")
+        #remove appended roles in wroles.py, for a fresh start
+        with open("wroles.py", 'r+') as fp:
+            lines = fp.readlines()
+            fp.seek(0)
+            fp.truncate()
+            fp.writelines(lines[:-6])
+        tcp_socket.close()
+        sys.exit()
+    
+    print(f'[*] Accepted connection from {address[0]}:{address[1]}')
+    client_handler = threading.Thread(target=handle_client, args=(client,))
+    client_handler.start()
+
+
+
+#after players connect, this segment should be server constantly accepting commands from client. (not working)     
+#server_socket.close()
+#udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#udp_socket.bind((HOST, PORT))
+#udp_clients = {}
+#print('bound')
+#try:
+#    while True:
+#        data, udp_client = udp_socket.recvfrom (1024)
+#        udp_clients[udp_client] = udp_socket
+#        com = data.decode("utf-8")
+#        print(com)
+#        for client in clients.keys():
+#            time.sleep(2)
+#            udp_socket.sendto(b'from server', client)
+#            print('sent to', client)
+##except KeyboardInterrupt or ConnectionResetError or BrokenPipeError or OSError:
+ #   print('\nClosing Server Socket...')
     #remove appended roles in wroles.py, for a fresh start
-    with open("wroles.py", 'r+') as fp:
-        lines = fp.readlines()
-        fp.seek(0)
-        fp.truncate()
-        fp.writelines(lines[:-6])
-    udp_socket.close()
-    sys.exit()
+#    with open("wroles.py", 'r+') as fp:
+#        lines = fp.readlines()
+#        fp.seek(0)
+#        fp.truncate()
+#        fp.writelines(lines[:-6])
+#    udp_socket.close()
+#    sys.exit()
+
+
+
     #send toggle info to clients
     #while True:
     #    ClientMsg = input(' -> ')
