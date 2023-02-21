@@ -50,7 +50,7 @@ p3_state = ['alive']
 p4_state = ['alive']
 p5_state = ['alive']
 
-HOST = '127.0.0.1'
+HOST = '192.168.254.105'
 PORT = 5555
 PORT2 = 5556
 

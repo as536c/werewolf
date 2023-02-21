@@ -21,6 +21,8 @@ p5_state = ['alive']
 self_state = ['alive', 'alive', 'alive', 'alive', 'alive']
 time_state = ['night']
 kill_chance = ['kill']
+vote_chance = ['vote']
+trick_chance = ['trick']
 
 r = range(5, 11)
 players = 0
@@ -41,7 +43,7 @@ players = 5
 
 import socket
 
-HOST = '127.0.0.1'
+HOST = '192.168.254.105'
 PORT = 5555
 PORT2 = 5556
 
@@ -104,7 +106,7 @@ if players == 5:
     
     def draw_window():
         revive_chance = 1
-        vote_chance = 1
+        
         trick_chance = 1
         
         #turns all player card to invisible
@@ -216,6 +218,12 @@ if players == 5:
                     message.append('Select player to revive')
                     waction.action = 'reviving'
 
+        elif self_state[challenger-1] == 'alive' and vote_chance[0] == 'vote':
+            if waction.votebutton.draw_button(WIN):
+                message.pop(0)
+                message.append('Select player to vote')
+                waction.action = 'voting'
+
         if player1.draw_button(WIN):
             message.pop(0)
             message.append('Player 1')
@@ -307,7 +315,7 @@ if players == 5:
                     message.append('Player 1 voted to be lynched')
                     tcp_socket.send(b'p1voted')
                     waction.action = ''
-                    vote_chance = 0
+                    vote_chance[0] = 'novote'
                 else:
                     message.pop(0)
                     message.append('Player 1 already dead')
@@ -484,7 +492,7 @@ if players == 5:
                     message.append('Player 2 voted to be lynched')
                     tcp_socket.send(b'p2voted')
                     waction.action = ''
-                    vote_chance = 0
+                    vote_chance[0] = 'novote'
                 else:
                     message.pop(0)
                     message.append('Player 2 already dead')
@@ -562,7 +570,7 @@ if players == 5:
                     message.append('Player 3 voted to be lynched')
                     tcp_socket.send(b'p3voted')
                     waction.action = ''
-                    vote_chance = 0
+                    vote_chance[0] = 'novote'
                 else:
                     message.pop(0)
                     message.append('Player 3 already dead')
@@ -639,7 +647,7 @@ if players == 5:
                     message.append('Player 4 voted to be lynched')
                     tcp_socket.send(b'p4voted')
                     waction.action = ''
-                    vote_chance = 0
+                    vote_chance[0] = 'novote'
                 else:
                     message.pop(0)
                     message.append('Player 4 already dead')
@@ -716,7 +724,7 @@ if players == 5:
                     message.append('Player 5 voted to be lynched')
                     tcp_socket.send(b'p5voted')
                     waction.action = ''
-                    vote_chance = 0
+                    vote_chance[0] = 'novote'
                 else:
                     message.pop(0)
                     message.append('Player 5 already dead')
@@ -745,6 +753,7 @@ def main():
 
 def sync():
     time.sleep(3)
+    
     while True:
         tcp_socket.send(b'sync')
         reply = tcp_socket.recv(512).decode('utf-8')
@@ -801,11 +810,11 @@ def sync():
                 self_state[4] = 'alive'
         if 'day' in reply:
             time_state[0] = 'day'
-            vote_chance[0] = 'kill'
+            kill_chance[0] = 'kill'
+            trick_chance[0] = 'trick'
         if 'night' in reply:
             time_state[0] = 'night'
-            kill_chance[0] = 'kill'
-            trick_chance = 1
+            vote_chance[0] = 'vote'
         time.sleep(3)
 
 syncwerewolf = threading.Thread(name='background', target=sync)
