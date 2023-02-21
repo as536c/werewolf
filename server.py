@@ -109,13 +109,63 @@ def handle_client(tcp_socket):
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             print('sent', svrheartbeat)
-                    if com.decode('utf-8') == 'hello':
-                        svrheartbeat = 'first action'
+                    if com.decode('utf-8') == 'day':
+                        svrheartbeat = 'day'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             print('sent', svrheartbeat)
-                    if com.decode('utf-8') == 'hi':
+                    if com.decode('utf-8') == 'night':
+                        svrheartbeat = 'night'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p1dead':
                         svrheartbeat = 'p1dead'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p2dead':
+                        svrheartbeat = 'p2dead'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p3dead':
+                        svrheartbeat = 'p3dead'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p4dead':
+                        svrheartbeat = 'p4dead'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p5dead':
+                        svrheartbeat = 'p5dead'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p1alive':
+                        svrheartbeat = 'p1alive'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p2alive':
+                        svrheartbeat = 'p2alive'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p3alive':
+                        svrheartbeat = 'p3alive'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p4alive':
+                        svrheartbeat = 'p4alive'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p5alive':
+                        svrheartbeat = 'p5alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             print('sent', svrheartbeat)

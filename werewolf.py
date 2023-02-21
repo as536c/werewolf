@@ -18,8 +18,9 @@ p2_state = ['alive']
 p3_state = ['alive']
 p4_state = ['alive']
 p5_state = ['alive']
-
+self_state = ['alive', 'alive', 'alive', 'alive', 'alive']
 time_state = ['night']
+kill_chance = ['kill']
 
 r = range(5, 11)
 players = 0
@@ -84,8 +85,8 @@ time.sleep(8)
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((HOST, PORT2))
 
-if players == 5:
-    message = ['hehe']
+if players == 5:   
+    message = ['Werewolf']
     WIDTH, HEIGHT = 640, 790
     # WIN = main window of game
     WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -102,6 +103,9 @@ if players == 5:
     #        wroles.role[n] = random.choice(wroles.wildcard)
     
     def draw_window():
+        revive_chance = 1
+        vote_chance = 1
+        trick_chance = 1
         
         #turns all player card to invisible
         if 'dead' in p1_state:
@@ -124,8 +128,8 @@ if players == 5:
             player5 = wbutton.Button(430,530,wroles.dead)
         else:
             player5 = wbutton.Button(430,530,wroles.invisible)  
-        switchtime1 = wbutton.Button(220,680,waction.shoot)
-        switchtime2 = wbutton.Button(220,730,waction.trick)
+        switchtime1 = wbutton.Button(220,680,waction.day)
+        switchtime2 = wbutton.Button(220,730,waction.night)
 
         #player1 = wbutton.Button(10,530,wroles.role[1])
         #player2 = wbutton.Button(10,10,wroles.role[2])
@@ -149,848 +153,574 @@ if players == 5:
 
         #switch day/night toggle
         #if challenger == 0: (to be developed, admin mode to toggle night day)
+
         if time_state[0] == 'night':
             BG = (0, 0, 139)
             WIN.fill(BG)
-            if switchtime1.draw_button(WIN):
-                print('click')
-                time_state[0] = 'day'
-                print(time_state)
+            if challenger == 1:
+                if switchtime1.draw_button(WIN):
+                    tcp_socket.send(b'day')
         elif time_state[0] == 'day':
             BG = (255, 255, 51)
             WIN.fill(BG)
-            if switchtime2.draw_button(WIN):
-                print('click')
-                time_state[0] = 'night'
-                print(time_state)
+            if challenger == 1:
+                if switchtime2.draw_button(WIN):
+                    tcp_socket.send(b'night')
 
         # update to only show challenger skills, not the first player's skills
-        if time_state[0] == 'night':
-            if wroles.role[challenger] in wroles.bad2:
+        if time_state[0] == 'night' and self_state[challenger-1] == 'alive':
+            if wroles.role[challenger] in wroles.bad2 and kill_chance[0] == 'kill':
                 if waction.killbutton.draw_button(WIN):
-                    print('kill')
+                    message.pop(0)
+                    message.append('Select player to kill')
                     waction.action = 'killing'
                 #if waction.assassinatebutton.draw_button(WIN):
                 #    print('assassinate')
                 #    waction.action = 'assassinating'
 
-                if wroles.role[challenger] == wroles.alpha:
-                    if waction.concealbutton.draw_button(WIN):
-                        print('conceal')
-                        waction.action = 'concealing'
+                #if wroles.role[challenger] == wroles.alpha:
+                #    if waction.concealbutton.draw_button(WIN):
+                #        print('conceal')
+                #        waction.action = 'concealing'
 
-                elif wroles.role[challenger] == wroles.wolftrickster:
+                elif wroles.role[challenger] == wroles.wolftrickster and trick_chance == 1:
                     if waction.trickbutton.draw_button(WIN):
-                        print('trick')
+                        message.pop(0)
+                        message.append('Select player to trick')
                         waction.action = 'tricking'
             
             elif wroles.role[challenger] == wroles.seer:
                 if waction.checkbutton.draw_button(WIN):
-                    print('check')
+                    message.pop(0)
+                    message.append('Select player to check')
                     waction.action = 'checking'
 
-            elif wroles.role[challenger] == wroles.medium:
-                if waction.seedeadbutton.draw_button(WIN):
-                    print('see dead')
-                    waction.action = 'seeing'
+            #elif wroles.role[challenger] == wroles.medium:
+            #    if waction.seedeadbutton.draw_button(WIN):
+            #        print('see dead')
+            #        waction.action = 'seeing'
 
-            elif wroles.role[challenger] == wroles.bodyguard:
-                if waction.protectbutton.draw_button(WIN):
-                    print('protect')
-                    waction.action = 'protecting'
+            #elif wroles.role[challenger] == wroles.bodyguard:
+            #    if waction.protectbutton.draw_button(WIN):
+            #        print('protect')
+            #        waction.action = 'protecting'
 
-            elif wroles.role[challenger] == wroles.sheriff:
-                if waction.shootbutton.draw_button(WIN):
-                    print('shoot')
-                    waction.action = 'shooting'
+            #elif wroles.role[challenger] == wroles.sheriff:
+            #    if waction.shootbutton.draw_button(WIN):
+            #        print('shoot')
+            #        waction.action = 'shooting'
 
-            elif wroles.role[challenger] == wroles.doctor:
+            elif wroles.role[challenger] == wroles.doctor and revive_chance == 1:
                 if waction.revivebutton.draw_button(WIN):
-                    print('revive')
+                    message.pop(0)
+                    message.append('Select player to revive')
                     waction.action = 'reviving'
 
         if player1.draw_button(WIN):
-            tcp_socket.send(b'hello')
-            reply = tcp_socket.recv(512).decode('utf-8')
-            if reply == 'hello':
-                time_state[0] = 'day'
             message.pop(0)
-            message.append('player1')
+            message.append('Player 1')
             if waction.action == 'checking':
                 if wroles.role[1] in wroles.bad_check:
                     if 'tricked' in p1_state:
                         message.pop(0)
-                        message.append('player is good')
+                        message.append('Player 1 is good')
+                        p1_state.remove('tricked')
                     else:
                         message.pop(0)
-                        message.append('player is bad')
+                        message.append('Player 1 is bad')
                     waction.action = ''
                 elif wroles.role[1] in wroles.good_check:
                     if 'tricked' in p1_state:
                         message.pop(0)
-                        message.append('player is bad')
+                        message.append('Player 1 is bad')
+                        p1_state.remove('tricked')
                     else:
                         message.pop(0)
-                        message.append('player is good')
+                        message.append('Player 1 is good')
                     waction.action = ''
                 elif wroles.role[1] in wroles.unknown_check:  
                     message.pop(0)
-                    message.append('player side is unknown')
+                    message.append('Player 1 side is unknown')
                     waction.action = ''
-            if waction.action == 'protecting':
-                if 'alive' in p1_state:
-                    message.pop(0)
-                    message.append('player is being protected')
-                    p1_state.append('protected')
-                    print(p1_state)
-                    waction.action = ''
+            #if waction.action == 'protecting':
+            #    if 'alive' in p1_state:
+            #        message.pop(0)
+            #        message.append('player is being protected')
+            #        p1_state.append('protected')
+            #        print(p1_state)
+            #        waction.action = ''
             if waction.action == 'reviving':
                 if 'dead' in p1_state:
                     message.pop(0)
-                    message.append('player revived')
+                    message.append('Player 1 revived')
                     p1_state.remove('dead')
                     p1_state.append('alive')
-                    print(p1_state)
+                    self_state[0] = 'alive'
+                    revive_chance = 0
+                    tcp_socket.send(b'p1alive')
                 else:
                     message.pop(0)
-                    message.append('player is still alive')
-            if waction.action == 'shooting':
-                if 'alive' in p1_state:
-                    message.pop(0)
-                    message.append('player shot')
-                    p1_state.remove('alive')
-                    p1_state.append('dead')
-                    print(p1_state)
+                    message.append('Player 1 is still alive')
                     waction.action = ''
-            if waction.action == 'seeing':
-                if 'dead' in p1_state:
-                    message.pop(0)
-                    message.append('player message here')
-                    waction.action = ''
+            #if waction.action == 'shooting':
+            #    if 'alive' in p1_state:
+            #        message.pop(0)
+            #        message.append('player shot')
+            #        p1_state.remove('alive')
+            #        p1_state.append('dead')
+            #        print(p1_state)
+            #        waction.action = ''
+            #if waction.action == 'seeing':
+            #    if 'dead' in p1_state:
+            #        message.pop(0)
+            #        message.append('player message here')
+            #        waction.action = ''
             if waction.action == 'killing':
                 if 'alive' in p1_state:
                     message.pop(0)
-                    message.append('player killed')
+                    message.append('Player 1 killed')
                     p1_state.remove('alive')
                     p1_state.append('dead')
-                    print(p1_state)
+                    self_state[0] = 'dead'
+                    tcp_socket.send(b'p1dead')
                     waction.action = ''
+                    kill_chance[0] = 'nokill'
                 else:
                     message.pop(0)
-                    message.append('cannot kill dead player')
+                    message.append('Player 1 already dead')
+                    waction.action = ''
             if waction.action == 'tricking':
                 if 'alive' in p1_state:
                     message.pop(0)
-                    message.append('player tricked')
+                    message.append('Player 1 tricked')
                     p1_state.append('tricked')
+                    tcp_socket.send(b'p1tricked')
                     waction.action = ''
-            if waction.action == 'assassinating':
+                    trick_chance = 0
+                else:
+                    message.pop(0)
+                    message.append('Player 1 already dead')
+                    waction.action = ''
+            if waction.action == 'voting':
                 if 'alive' in p1_state:
-                    assassination = True
-                    clock = pygame.time.Clock()
-                    while assassination:
-                        clock.tick(FPS)
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                assassination = False
-                        if waction.assvillagerbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.villager:
-                                message.pop(0)
-                                message.append('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                message.pop(0)
-                                message.append('player1')  
-                                assassination = False         
-                        if waction.assseerbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.seer:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assmediumbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.medium:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assbodyguardbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.bodyguard:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assdoctorbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.doctor:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asssheriffbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.sheriff:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assfoolbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.fool:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asshunterbutton.draw_button(WIN):
-                            if wroles.role[1] == wroles.hunter:
-                                print('player assassinated')
-                                p1_state.remove('alive')
-                                p1_state.append('dead')
-                                print(p1_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        pygame.display.update()
+                    message.pop(0)
+                    message.append('Player 1 voted to be lynched')
+                    tcp_socket.send(b'p1voted')
+                    waction.action = ''
+                    vote_chance = 0
+                else:
+                    message.pop(0)
+                    message.append('Player 1 already dead')
                     waction.action = ''
 
-                else:
-                    print('player is already dead!')
+                
+
+            #assassinate (TO BE IMPLEMENTED, TOO COMPLEX)        
+            #if waction.action == 'assassinating':
+            #    if 'alive' in p1_state:
+            #        assassination = True
+            #        clock = pygame.time.Clock()
+            #        while assassination:
+            #            clock.tick(FPS)
+            #            for event in pygame.event.get():
+            #                if event.type == pygame.QUIT:
+            #                    assassination = False
+            #            if waction.assvillagerbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.villager:
+            #                    message.pop(0)
+            #                    message.append('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    message.pop(0)
+            #                    message.append('player1')  
+            #                    assassination = False         
+            #            if waction.assseerbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.seer:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            if waction.assmediumbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.medium:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            if waction.assbodyguardbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.bodyguard:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            if waction.assdoctorbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.doctor:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            if waction.asssheriffbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.sheriff:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            if waction.assfoolbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.fool:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            if waction.asshunterbutton.draw_button(WIN):
+            #                if wroles.role[1] == wroles.hunter:
+            #                    print('player assassinated')
+            #                    p1_state.remove('alive')
+            #                    p1_state.append('dead')
+            #                    print(p1_state)
+            #                    assassination = False
+            #                else:
+            #                    print('wrong guess! you are ded')
+            #                    assassination = False
+            #            pygame.display.update()
+            #        waction.action = ''
+            #    
+            #   else:
+            #        print('player is already dead!')
 
         if player2.draw_button(WIN):
-            tcp_socket.send(b'hi')
-            reply = tcp_socket.recv(512).decode('utf-8')
-            print('player 2')
+            message.pop(0)
+            message.append('Player 2')
             if waction.action == 'checking':
                 if wroles.role[2] in wroles.bad_check:
                     if 'tricked' in p2_state:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 2 is good')
+                        p2_state.remove('tricked')
                     else:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 2 is bad')
                     waction.action = ''
                 elif wroles.role[2] in wroles.good_check:
                     if 'tricked' in p2_state:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 2 is bad')
+                        p2_state.remove('tricked')
                     else:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 2 is good')
                     waction.action = ''
                 elif wroles.role[2] in wroles.unknown_check:  
-                    print('player side is unknown')
-                    waction.action = ''
-            if waction.action == 'protecting':
-                if 'alive' in p2_state:
-                    print('player is being protected')
-                    p2_state.append('protected')
-                    print(p2_state)
+                    message.pop(0)
+                    message.append('Player 2 side is unknown')
                     waction.action = ''
             if waction.action == 'reviving':
                 if 'dead' in p2_state:
-                    print('player is revived')
+                    message.pop(0)
+                    message.append('Player 2 revived')
                     p2_state.remove('dead')
                     p2_state.append('alive')
-                    print(p2_state)
+                    self_state[1] = 'alive'
+                    revive_chance = 0
+                    tcp_socket.send(b'p2alive')
                 else:
-                    print('player is still alive!')
-            if waction.action == 'shooting':
-                if 'alive' in p2_state:
-                    print('player is shot')
-                    p2_state.remove('alive')
-                    p2_state.append('dead')
-                    print(p2_state)
-                    waction.action = ''
-            if waction.action == 'seeing':
-                if 'dead' in p2_state:
-                    print('message from dead: "enter message here"')
+                    message.pop(0)
+                    message.append('Player 2 is still alive')
                     waction.action = ''
             if waction.action == 'killing':
                 if 'alive' in p2_state:
-                    print('player is killed')
+                    message.pop(0)
+                    message.append('Player 2 killed')
                     p2_state.remove('alive')
                     p2_state.append('dead')
-                    print(p2_state)
+                    self_state[1] = 'dead'
+                    tcp_socket.send(b'p2dead')
                     waction.action = ''
+                    kill_chance[0] = 'nokill'
                 else:
-                    print('player is already dead')
+                    message.pop(0)
+                    message.append('Player 2 already dead')
                     waction.action = ''
             if waction.action == 'tricking':
                 if 'alive' in p2_state:
-                    print('player is tricked')
+                    message.pop(0)
+                    message.append('Player 2 tricked')
                     p2_state.append('tricked')
+                    tcp_socket.send(b'p2tricked')
                     waction.action = ''
-            if waction.action == 'assassinating':
-                if 'alive' in p2_state:
-                    assassination = True
-                    clock = pygame.time.Clock()
-                    while assassination:
-                        clock.tick(FPS)
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                assassination = False
-                        if waction.assvillagerbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.villager:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')   
-                                assassination = False         
-                        if waction.assseerbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.seer:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assmediumbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.medium:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assbodyguardbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.bodyguard:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assdoctorbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.doctor:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asssheriffbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.sheriff:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assfoolbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.fool:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asshunterbutton.draw_button(WIN):
-                            if wroles.role[2] == wroles.hunter:
-                                print('player assassinated')
-                                p2_state.remove('alive')
-                                p2_state.append('dead')
-                                print(p2_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        pygame.display.update()
-                    waction.action = ''
-
+                    trick_chance = 0
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 2 already dead')
+                    waction.action = ''
+            if waction.action == 'voting':
+                if 'alive' in p2_state:
+                    message.pop(0)
+                    message.append('Player 2 voted to be lynched')
+                    tcp_socket.send(b'p2voted')
+                    waction.action = ''
+                    vote_chance = 0
+                else:
+                    message.pop(0)
+                    message.append('Player 2 already dead')
+                    waction.action = ''
 
         if player3.draw_button(WIN):
-            print('player 3')
+            message.pop(0)
+            message.append('Player 3')
             if waction.action == 'checking':
                 if wroles.role[3] in wroles.bad_check:
                     if 'tricked' in p3_state:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 3 is good')
+                        p3_state.remove('tricked')
                     else:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 3 is bad')
                     waction.action = ''
                 elif wroles.role[3] in wroles.good_check:
                     if 'tricked' in p3_state:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 3 is bad')
+                        p3_state.remove('tricked')
                     else:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 3 is good')
                     waction.action = ''
                 elif wroles.role[3] in wroles.unknown_check:  
-                    print('player side is unknown')
-                    waction.action = ''
-            if waction.action == 'protecting':
-                if 'alive' in p3_state:
-                    print('player is being protected')
-                    p3_state.append('protected')
-                    print(p3_state)
+                    message.pop(0)
+                    message.append('Player 3 side is unknown')
                     waction.action = ''
             if waction.action == 'reviving':
                 if 'dead' in p3_state:
-                    print('player is revived')
+                    message.pop(0)
+                    message.append('Player 3 revived')
                     p3_state.remove('dead')
                     p3_state.append('alive')
-                    print(p3_state)
+                    self_state[2] = 'alive'
+                    revive_chance = 0
+                    tcp_socket.send(b'p3alive')
                 else:
-                    print('player is still alive!')
-            if waction.action == 'shooting':
-                if 'alive' in p3_state:
-                    print('player is shot')
-                    p3_state.remove('alive')
-                    p3_state.append('dead')
-                    print(p3_state)
-                    waction.action = ''
-            if waction.action == 'seeing':
-                if 'dead' in p3_state:
-                    print('message from dead: "enter message here"')
+                    message.pop(0)
+                    message.append('Player 3 is still alive')
                     waction.action = ''
             if waction.action == 'killing':
                 if 'alive' in p3_state:
-                    print('player is killed')
+                    message.pop(0)
+                    message.append('Player 3 killed')
                     p3_state.remove('alive')
                     p3_state.append('dead')
-                    print(p3_state)
+                    self_state[2] = 'dead'
+                    tcp_socket.send(b'p3dead')
                     waction.action = ''
+                    kill_chance[0] = 'nokill'
+                    pygame.display.update()
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 3 already dead')
+                    waction.action = ''
             if waction.action == 'tricking':
                 if 'alive' in p3_state:
-                    print('player is tricked')
+                    message.pop(0)
+                    message.append('Player 3 tricked')
                     p3_state.append('tricked')
+                    tcp_socket.send(b'p3tricked')
                     waction.action = ''
-            if waction.action == 'assassinating':
-                if 'alive' in p3_state:
-                    assassination = True
-                    clock = pygame.time.Clock()
-                    while assassination:
-                        clock.tick(FPS)
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                assassination = False
-                        if waction.assvillagerbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.villager:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')   
-                                assassination = False         
-                        if waction.assseerbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.seer:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assmediumbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.medium:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assbodyguardbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.bodyguard:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assdoctorbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.doctor:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asssheriffbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.sheriff:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assfoolbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.fool:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asshunterbutton.draw_button(WIN):
-                            if wroles.role[3] == wroles.hunter:
-                                print('player assassinated')
-                                p3_state.remove('alive')
-                                p3_state.append('dead')
-                                print(p3_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        pygame.display.update()
-                    waction.action = ''
-
+                    trick_chance = 0
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 3 already dead')
+                    waction.action = ''
+            if waction.action == 'voting':
+                if 'alive' in p3_state:
+                    message.pop(0)
+                    message.append('Player 3 voted to be lynched')
+                    tcp_socket.send(b'p3voted')
+                    waction.action = ''
+                    vote_chance = 0
+                else:
+                    message.pop(0)
+                    message.append('Player 3 already dead')
+                    waction.action = ''
 
         if player4.draw_button(WIN):
-            print('player 4')
+            message.pop(0)
+            message.append('Player 4')
             if waction.action == 'checking':
                 if wroles.role[4] in wroles.bad_check:
                     if 'tricked' in p4_state:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 4 is good')
+                        p4_state.remove('tricked')
                     else:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 4 is bad')
                     waction.action = ''
                 elif wroles.role[4] in wroles.good_check:
                     if 'tricked' in p4_state:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 4 is bad')
+                        p4_state.remove('tricked')
                     else:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 4 is good')
                     waction.action = ''
                 elif wroles.role[4] in wroles.unknown_check:  
-                    print('player side is unknown')
-                    waction.action = ''
-            if waction.action == 'protecting':
-                if 'alive' in p4_state:
-                    print('player is being protected')
-                    p4_state.append('protected')
-                    print(p4_state)
+                    message.pop(0)
+                    message.append('Player 4 side is unknown')
                     waction.action = ''
             if waction.action == 'reviving':
                 if 'dead' in p4_state:
-                    print('player is revived')
+                    message.pop(0)
+                    message.append('Player 4 revived')
                     p4_state.remove('dead')
                     p4_state.append('alive')
-                    print(p4_state)
+                    self_state[3] = 'alive'
+                    revive_chance = 0
+                    tcp_socket.send(b'p4alive')
                 else:
-                    print('player is still alive!')
-            if waction.action == 'shooting':
-                if 'alive' in p4_state:
-                    print('player is shot')
-                    p4_state.remove('alive')
-                    p4_state.append('dead')
-                    print(p4_state)
-                    waction.action = ''
-            if waction.action == 'seeing':
-                if 'dead' in p4_state:
-                    print('message from dead: "enter message here"')
+                    message.pop(0)
+                    message.append('Player 4 is still alive')
                     waction.action = ''
             if waction.action == 'killing':
                 if 'alive' in p4_state:
-                    print('player is killed')
+                    message.pop(0)
+                    message.append('Player 4 killed')
                     p4_state.remove('alive')
                     p4_state.append('dead')
-                    print(p4_state)
+                    self_state[3] = 'dead'
+                    tcp_socket.send(b'p4dead')
                     waction.action = ''
+                    kill_chance[0] = 'nokill'
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 4 already dead')
+                    waction.action = ''
             if waction.action == 'tricking':
                 if 'alive' in p4_state:
-                    print('player is tricked')
+                    message.pop(0)
+                    message.append('Player 4 tricked')
                     p4_state.append('tricked')
+                    tcp_socket.send(b'p4tricked')
                     waction.action = ''
-            if waction.action == 'assassinating':
-                if 'alive' in p4_state:
-                    assassination = True
-                    clock = pygame.time.Clock()
-                    while assassination:
-                        clock.tick(FPS)
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                assassination = False
-                        if waction.assvillagerbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.villager:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')   
-                                assassination = False         
-                        if waction.assseerbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.seer:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assmediumbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.medium:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assbodyguardbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.bodyguard:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assdoctorbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.doctor:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asssheriffbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.sheriff:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assfoolbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.fool:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asshunterbutton.draw_button(WIN):
-                            if wroles.role[4] == wroles.hunter:
-                                print('player assassinated')
-                                p4_state.remove('alive')
-                                p4_state.append('dead')
-                                print(p4_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        pygame.display.update()
-                    waction.action = ''
-
+                    trick_chance = 0
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 4 already dead')
+                    waction.action = ''
+            if waction.action == 'voting':
+                if 'alive' in p4_state:
+                    message.pop(0)
+                    message.append('Player 4 voted to be lynched')
+                    tcp_socket.send(b'p4voted')
+                    waction.action = ''
+                    vote_chance = 0
+                else:
+                    message.pop(0)
+                    message.append('Player 4 already dead')
+                    waction.action = ''
 
         if player5.draw_button(WIN):
-            print('player 5')
+            message.pop(0)
+            message.append('Player 5')
             if waction.action == 'checking':
                 if wroles.role[5] in wroles.bad_check:
                     if 'tricked' in p5_state:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 5 is good')
+                        p5_state.remove('tricked')
                     else:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 5 is bad')
                     waction.action = ''
                 elif wroles.role[5] in wroles.good_check:
                     if 'tricked' in p5_state:
-                        print('player is bad')
+                        message.pop(0)
+                        message.append('Player 5 is bad')
+                        p5_state.remove('tricked')
                     else:
-                        print('player is good')
+                        message.pop(0)
+                        message.append('Player 5 is good')
                     waction.action = ''
                 elif wroles.role[5] in wroles.unknown_check:  
-                    print('player side is unknown')
-                    waction.action = ''
-            if waction.action == 'protecting':
-                if 'alive' in p5_state:
-                    print('player is being protected')
-                    p5_state.append('protected')
-                    print(p5_state)
+                    message.pop(0)
+                    message.append('Player 5 side is unknown')
                     waction.action = ''
             if waction.action == 'reviving':
                 if 'dead' in p5_state:
-                    print('player is revived')
+                    message.pop(0)
+                    message.append('Player 5 revived')
                     p5_state.remove('dead')
                     p5_state.append('alive')
-                    print(p5_state)
+                    self_state[4] = 'alive'
+                    revive_chance = 0
+                    tcp_socket.send(b'p5alive')
                 else:
-                    print('player is still alive!')
-            if waction.action == 'shooting':
-                if 'alive' in p5_state:
-                    print('player is shot')
-                    p5_state.remove('alive')
-                    p5_state.append('dead')
-                    print(p5_state)
-                    waction.action = ''
-            if waction.action == 'seeing':
-                if 'dead' in p5_state:
-                    print('message from dead: "enter message here"')
+                    message.pop(0)
+                    message.append('Player 5 is still alive')
                     waction.action = ''
             if waction.action == 'killing':
                 if 'alive' in p5_state:
-                    print('player is killed')
+                    message.pop(0)
+                    message.append('Player 5 killed')
                     p5_state.remove('alive')
                     p5_state.append('dead')
-                    print(p5_state)
+                    self_state[4] = 'dead'
+                    tcp_socket.send(b'p5dead')
                     waction.action = ''
+                    kill_chance[0] = 'nokill'
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 5 already dead')
+                    waction.action = ''
             if waction.action == 'tricking':
                 if 'alive' in p5_state:
-                    print('player is tricked')
+                    message.pop(0)
+                    message.append('Player 5 tricked')
                     p5_state.append('tricked')
+                    tcp_socket.send(b'p5tricked')
                     waction.action = ''
-            if waction.action == 'assassinating':
-                if 'alive' in p5_state:
-                    assassination = True
-                    clock = pygame.time.Clock()
-                    while assassination:
-                        clock.tick(FPS)
-                        for event in pygame.event.get():
-                            if event.type == pygame.QUIT:
-                                assassination = False
-                        if waction.assvillagerbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.villager:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')   
-                                assassination = False         
-                        if waction.assseerbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.seer:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assmediumbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.medium:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assbodyguardbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.bodyguard:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assdoctorbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.doctor:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asssheriffbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.sheriff:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.assfoolbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.fool:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        if waction.asshunterbutton.draw_button(WIN):
-                            if wroles.role[5] == wroles.hunter:
-                                print('player assassinated')
-                                p5_state.remove('alive')
-                                p5_state.append('dead')
-                                print(p5_state)
-                                assassination = False
-                            else:
-                                print('wrong guess! you are ded')
-                                assassination = False
-                        pygame.display.update()
-                    waction.action = ''
-
+                    trick_chance = 0
                 else:
-                    print('player is already dead!')
+                    message.pop(0)
+                    message.append('Player 5 already dead')
+                    waction.action = ''
+            if waction.action == 'voting':
+                if 'alive' in p5_state:
+                    message.pop(0)
+                    message.append('Player 5 voted to be lynched')
+                    tcp_socket.send(b'p5voted')
+                    waction.action = ''
+                    vote_chance = 0
+                else:
+                    message.pop(0)
+                    message.append('Player 5 already dead')
+                    waction.action = ''
 
 def main():
     clock = pygame.time.Clock()
@@ -1014,7 +744,7 @@ def main():
     pygame.quit()
 
 def sync():
-    time.sleep(5)
+    time.sleep(3)
     while True:
         tcp_socket.send(b'sync')
         reply = tcp_socket.recv(512).decode('utf-8')
@@ -1023,7 +753,60 @@ def sync():
             if 'alive' in p1_state:
                 p1_state.remove('alive')
                 p1_state.append('dead')
-        time.sleep(5)
+                self_state[0] = 'dead'
+        if 'p2dead' in reply:
+            if 'alive' in p2_state:
+                p2_state.remove('alive')
+                p2_state.append('dead')
+                self_state[1] = 'dead'
+        if 'p3dead' in reply:
+            if 'alive' in p3_state:
+                p3_state.remove('alive')
+                p3_state.append('dead')
+                self_state[2] = 'dead'
+        if 'p4dead' in reply:
+            if 'alive' in p4_state:
+                p4_state.remove('alive')
+                p4_state.append('dead')
+                self_state[3] = 'dead'
+        if 'p5dead' in reply:
+            if 'alive' in p5_state:
+                p5_state.remove('alive')
+                p5_state.append('dead')
+                self_state[4] = 'dead'
+        if 'p1alive' in reply:
+            if 'dead' in p1_state:
+                p1_state.remove('dead')
+                p1_state.append('alive')
+                self_state[0] = 'alive'
+        if 'p2alive' in reply:
+            if 'dead' in p2_state:
+                p2_state.remove('dead')
+                p2_state.append('alive')
+                self_state[1] = 'alive'
+        if 'p3alive' in reply:
+            if 'dead' in p3_state:
+                p3_state.remove('dead')
+                p3_state.append('alive')
+                self_state[2] = 'alive'
+        if 'p4alive' in reply:
+            if 'dead' in p4_state:
+                p4_state.remove('dead')
+                p4_state.append('alive')
+                self_state[3] = 'alive'
+        if 'p5alive' in reply:
+            if 'dead' in p5_state:
+                p5_state.remove('dead')
+                p5_state.append('alive')
+                self_state[4] = 'alive'
+        if 'day' in reply:
+            time_state[0] = 'day'
+            vote_chance[0] = 'kill'
+        if 'night' in reply:
+            time_state[0] = 'night'
+            kill_chance[0] = 'kill'
+            trick_chance = 1
+        time.sleep(3)
 
 syncwerewolf = threading.Thread(name='background', target=sync)
 mainwerewolf = threading.Thread(name='foreground', target=main)

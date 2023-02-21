@@ -44,3 +44,6 @@ assdoctorbutton = wbutton.Button(325, 270, assdoctor)
 asssheriffbutton = wbutton.Button(325, 332.5, asssheriff)
 assfoolbutton = wbutton.Button(325, 395, assfool)
 asshunterbutton = wbutton.Button(325, 457.5, asshunter)
+
+day = pygame.image.load(os.path.join(path,'day.png'))
+night = pygame.image.load(os.path.join(path,'night.png'))
