@@ -53,7 +53,7 @@ p5_state = ['alive']
 HOST = '127.0.0.1'
 PORT = 5555
 PORT2 = 5556
-clients = {}
+
 challenger = 1
 
 #TCP server
@@ -75,7 +75,6 @@ while challenger < 3:
             fp.writelines(lines[:-6])
         server_socket.close()
         sys.exit()    
-    clients[address] = client_socket
     print(f'[*] Accepted connection from {address[0]}:{address[1]}')   
     request = client_socket.recv(1024)
     chal_str = str(challenger)
@@ -94,19 +93,32 @@ tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind((HOST, PORT2))
 tcp_socket.listen(5)
 print('[*] Game initiated. Press Ctrl-C to Exit')
+clients = set()
+clients_lock = threading.Lock()
 
 def handle_client(tcp_socket):
+    svrheartbeat = 'sync'
     with tcp_socket as sock:
         while True:
             com = sock.recv(1024)
-            if com.decode('utf-8') == 'sync':
-                sock.send(com)
-                print('sync')
+            if not com:
+                break
             else:
-                for c in clients.keys():
-                    sock.sendto(com, c)
-                    print('sent to', c)    
-                    time.sleep(1)
+                with clients_lock:
+                    if com.decode('utf-8') == 'sync':
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'hello':
+                        svrheartbeat = 'first action'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'hi':
+                        svrheartbeat = 'p1dead'
+                        for c in clients:
+                            c.send(svrheartbeat.encode('utf-8'))
+                            print('sent', svrheartbeat)
 
 while True:
     try:
@@ -122,7 +134,9 @@ while True:
         tcp_socket.close()
         sys.exit()
     
-    print(f'[*] Accepted connection from {address[0]}:{address[1]}')
+    print(f'[*] Accepted connection from {tcp_address[0]}:{tcp_address[1]}')
+    with clients_lock:
+        clients.add(client)
     client_handler = threading.Thread(target=handle_client, args=(client,))
     client_handler.start()
 

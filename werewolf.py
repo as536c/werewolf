@@ -382,6 +382,8 @@ if players == 5:
                     print('player is already dead!')
 
         if player2.draw_button(WIN):
+            tcp_socket.send(b'hi')
+            reply = tcp_socket.recv(512).decode('utf-8')
             print('player 2')
             if waction.action == 'checking':
                 if wroles.role[2] in wroles.bad_check:
@@ -1017,6 +1019,10 @@ def sync():
         tcp_socket.send(b'sync')
         reply = tcp_socket.recv(512).decode('utf-8')
         print(reply)
+        if 'p1dead' in reply:
+            if 'alive' in p1_state:
+                p1_state.remove('alive')
+                p1_state.append('dead')
         time.sleep(5)
 
 syncwerewolf = threading.Thread(name='background', target=sync)
