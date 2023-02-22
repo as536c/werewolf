@@ -113,23 +113,23 @@ if players == 5:
         if 'dead' in p1_state:
             player1 = wbutton.Button(10,530,wroles.dead)
         else:
-            player1 = wbutton.Button(10,530,wroles.villager6)
+            player1 = wbutton.Button(10,530,wroles.villager3)
         if 'dead' in p2_state:
             player2 = wbutton.Button(10,10,wroles.dead)
         else:
-            player2 = wbutton.Button(10,10,wroles.villager2)
+            player2 = wbutton.Button(10,10,wroles.villager4)
         if 'dead' in p3_state:
             player3 = wbutton.Button(220,10,wroles.dead)
         else:    
-            player3 = wbutton.Button(220,10,wroles.villager3)
+            player3 = wbutton.Button(220,10,wroles.villager5)
         if 'dead' in p4_state:
             player4 = wbutton.Button(430,10,wroles.dead)
         else:
-            player4 = wbutton.Button(430,10,wroles.villager4)
+            player4 = wbutton.Button(430,10,wroles.villager6)
         if 'dead' in p5_state:
             player5 = wbutton.Button(430,530,wroles.dead)
         else:
-            player5 = wbutton.Button(430,530,wroles.villager1)
+            player5 = wbutton.Button(430,530,wroles.villager7)
         switchtime1 = wbutton.Button(220,680,waction.day)
         switchtime2 = wbutton.Button(220,730,waction.night)
 
