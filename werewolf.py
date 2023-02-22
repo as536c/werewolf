@@ -6,6 +6,7 @@ import wroles
 import waction
 import time
 import threading
+import random
 
 BG = (0, 0, 139)
 white = (255, 255, 255)
@@ -43,8 +44,8 @@ players = 5
 
 import socket
 
-HOST = '192.168.254.105'
-PORT = 5555
+HOST = '127.0.0.1'
+PORT = 8888
 PORT2 = 5556
 
 #command = 'hello'
@@ -83,7 +84,7 @@ challenger = int(challenger_byte)
 #svrcommand = bytes(command, 'utf-8')
 
 client_socket.close()
-time.sleep(8)
+time.sleep(15)
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((HOST, PORT2))
 
@@ -103,33 +104,32 @@ if players == 5:
     #        wroles.bad.remove(wroles.role[n])
     #    if wroles.role[n] == wroles.wildcard:
     #        wroles.role[n] = random.choice(wroles.wildcard)
-    
+
     def draw_window():
         revive_chance = 1
-        
         trick_chance = 1
         
         #turns all player card to invisible
         if 'dead' in p1_state:
             player1 = wbutton.Button(10,530,wroles.dead)
         else:
-            player1 = wbutton.Button(10,530,wroles.invisible)
+            player1 = wbutton.Button(10,530,wroles.villager6)
         if 'dead' in p2_state:
             player2 = wbutton.Button(10,10,wroles.dead)
         else:
-            player2 = wbutton.Button(10,10,wroles.invisible)
+            player2 = wbutton.Button(10,10,wroles.villager2)
         if 'dead' in p3_state:
             player3 = wbutton.Button(220,10,wroles.dead)
         else:    
-            player3 = wbutton.Button(220,10,wroles.invisible)
+            player3 = wbutton.Button(220,10,wroles.villager3)
         if 'dead' in p4_state:
             player4 = wbutton.Button(430,10,wroles.dead)
         else:
-            player4 = wbutton.Button(430,10,wroles.invisible)
+            player4 = wbutton.Button(430,10,wroles.villager4)
         if 'dead' in p5_state:
             player5 = wbutton.Button(430,530,wroles.dead)
         else:
-            player5 = wbutton.Button(430,530,wroles.invisible)  
+            player5 = wbutton.Button(430,530,wroles.villager1)
         switchtime1 = wbutton.Button(220,680,waction.day)
         switchtime2 = wbutton.Button(220,730,waction.night)
 

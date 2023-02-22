@@ -50,8 +50,8 @@ p3_state = ['alive']
 p4_state = ['alive']
 p5_state = ['alive']
 
-HOST = '192.168.254.105'
-PORT = 5555
+HOST = '127.0.0.1'
+PORT = 8888
 PORT2 = 5556
 
 challenger = 1
@@ -62,7 +62,7 @@ server_socket.bind((HOST, PORT))
 server_socket.listen(5)
 print(f'[*] Listening on {HOST}:{PORT}')
 #connects players
-while challenger < 3:
+while challenger < 6:
     try:
         client_socket, address = server_socket.accept()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
@@ -87,7 +87,7 @@ while challenger < 3:
 
 server_socket.close()
 print('Initializing...')
-time.sleep(5)
+time.sleep(10)
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind((HOST, PORT2))
