@@ -9,6 +9,26 @@ wildcard = ['fool', 'hunter']
 bad = ['wolf', 'alpha', 'wolftrickster']
 roles = ['bad', 'villager', 'doctor', 'seer', 'wildcard']
 
+#server states
+p1_state = ['alive']
+p2_state = ['alive']
+p3_state = ['alive']
+p4_state = ['alive']
+p5_state = ['alive']
+
+HOST = '127.0.0.1'
+PORT = 8888
+PORT2 = 5556
+
+challenger = 1
+
+#TCP server
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server_socket.bind((HOST, PORT))
+server_socket.listen(5)
+print(f'[*] Listening on {HOST}:{PORT}')
+
+#randomizes roles (repositioned to initiate connection first before adding roles)
 for n in range(1, 6):
     if n != 5:
         role = random.choice(roles)
@@ -43,24 +63,6 @@ for n in range(1, 6):
             with open("wroles.py", "a") as f:
                 f.write(" " + str(n) + ": " + role + "\n}") 
 
-#server states
-p1_state = ['alive']
-p2_state = ['alive']
-p3_state = ['alive']
-p4_state = ['alive']
-p5_state = ['alive']
-
-HOST = '127.0.0.1'
-PORT = 8888
-PORT2 = 5556
-
-challenger = 1
-
-#TCP server
-server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_socket.bind((HOST, PORT))
-server_socket.listen(5)
-print(f'[*] Listening on {HOST}:{PORT}')
 #connects players
 while challenger < 3:
     try:
@@ -87,7 +89,7 @@ while challenger < 3:
 
 server_socket.close()
 print('Initializing...')
-time.sleep(10)
+time.sleep(5)
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind((HOST, PORT2))
@@ -187,7 +189,7 @@ def handle_client(tcp_socket):
                         print(vote.votes)
                     if com.decode('utf-8') == 'votestart':
                         if vote.votes.count(max(vote.votes)) == 1:
-                            voteres = 'p'+str(vote.votes.index(max(vote.votes))+1)+'dead'
+                            voteres = 'p'+str(vote.votes.index(max(vote.votes))+1)+'lynch'
                             for c in clients:
                                 c.send(voteres.encode('utf-8'))
                             vote.votes = [0,0,0,0,0]

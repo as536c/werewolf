@@ -10,7 +10,7 @@ import socket
 
 #background variables
 BG = (0, 0, 139)
-FPS = 10
+FPS = 5
 HOST = '127.0.0.1'
 PORT = 8888
 PORT2 = 5556
@@ -67,7 +67,7 @@ challenger = int(challenger_byte)
 #svrcommand = bytes(command, 'utf-8')
 
 client_socket.close()
-time.sleep(15)
+time.sleep(8)
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((HOST, PORT2))
 
@@ -833,6 +833,41 @@ def sync():
                 p5_state.remove('dead')
                 p5_state.append('alive')
                 self_state[4] = 'alive'
+        if 'p1lynch' in reply:
+            if 'alive' in p1_state:
+                p1_state.remove('alive')
+                p1_state.append('dead')
+                self_state[0] = 'dead'
+                message.pop(0)
+                message.append('Player 1 lynched')
+        if 'p2lynch' in reply:
+            if 'alive' in p2_state:
+                p2_state.remove('alive')
+                p2_state.append('dead')
+                self_state[1] = 'dead'
+                message.pop(0)
+                message.append('Player 2 lynched')
+        if 'p3lynch' in reply:
+            if 'alive' in p3_state:
+                p3_state.remove('alive')
+                p3_state.append('dead')
+                self_state[2] = 'dead'
+                message.pop(0)
+                message.append('Player 3 lynched')
+        if 'p4lynch' in reply:
+            if 'alive' in p4_state:
+                p4_state.remove('alive')
+                p4_state.append('dead')
+                self_state[3] = 'dead'
+                message.pop(0)
+                message.append('Player 4 lynched')
+        if 'p5lynch' in reply:
+            if 'alive' in p5_state:
+                p5_state.remove('alive')
+                p5_state.append('dead')
+                self_state[4] = 'dead'
+                message.pop(0)
+                message.append('Player 5 lynched')
         if 'day' in reply:
             time_state[0] = 'day'
             kill_chance[0] = 'kill'
