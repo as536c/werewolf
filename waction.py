@@ -16,7 +16,7 @@ revive = pygame.image.load(os.path.join(path,'revive.png'))
 check = pygame.image.load(os.path.join(path,'check.png'))
 protect = pygame.image.load(os.path.join(path,'protect.png'))
 kill = pygame.image.load(os.path.join(path,'kill.png'))
-vote = pygame.image.load(os.path.join(path,'kill.png'))
+vote = pygame.image.load(os.path.join(path,'vote.png'))
 
 assvillager = pygame.image.load(os.path.join(path,'assvillager.png'))
 assseer = pygame.image.load(os.path.join(path,'assseer.png'))

@@ -1,14 +1,6 @@
-state = ['alive']
-
-print(state)
-state.remove('alive')
-print(state)
-state.append('dead')
-print(state)
-state.append('alive')
-print(state)
-
-if 'dead' in state:
-    print('u is dead')
+votes = [1,1,5,2,3]
+if votes.count(max(votes)) == 1:
+    voteres = 'p'+str(votes.index(max(votes))+1)+'dead'
+    print(voteres.encode('utf-8'))
 else:
-    print('u is alive')
+    print('tie')
