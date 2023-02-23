@@ -2,7 +2,7 @@ import pygame
 import os
 import wbutton
 
-path = "werewolf_project/assets/"
+path = "assets/"
 
 action = '' #action to take when clicking on player cards; killing,checking,reviving
 state = '' #player state; protected, concealed, deceived, dead
@@ -16,6 +16,7 @@ revive = pygame.image.load(os.path.join(path,'revive.png'))
 check = pygame.image.load(os.path.join(path,'check.png'))
 protect = pygame.image.load(os.path.join(path,'protect.png'))
 kill = pygame.image.load(os.path.join(path,'kill.png'))
+vote = pygame.image.load(os.path.join(path,'kill.png'))
 
 assvillager = pygame.image.load(os.path.join(path,'assvillager.png'))
 assseer = pygame.image.load(os.path.join(path,'assseer.png'))
@@ -26,10 +27,11 @@ asssheriff = pygame.image.load(os.path.join(path,'asssheriff.png'))
 assfool = pygame.image.load(os.path.join(path,'assfool.png'))
 asshunter = pygame.image.load(os.path.join(path,'asshunter.png'))
 
+votebutton = wbutton.Button(220,470, vote)
 killbutton = wbutton.Button(220,530, kill)
-assassinatebutton = wbutton.Button(220,590, assassinate)
-concealbutton = wbutton.Button(220, 650, conceal)
-trickbutton = wbutton.Button(220, 650, trick)
+assassinatebutton = wbutton.Button(220,650, assassinate)
+concealbutton = wbutton.Button(220, 590, conceal)
+trickbutton = wbutton.Button(220, 590, trick)
 protectbutton = wbutton.Button(220,530, protect)
 checkbutton = wbutton.Button(220,530, check)
 revivebutton = wbutton.Button(220,530, revive)
@@ -44,3 +46,6 @@ assdoctorbutton = wbutton.Button(325, 270, assdoctor)
 asssheriffbutton = wbutton.Button(325, 332.5, asssheriff)
 assfoolbutton = wbutton.Button(325, 395, assfool)
 asshunterbutton = wbutton.Button(325, 457.5, asshunter)
+
+day = pygame.image.load(os.path.join(path,'day.png'))
+night = pygame.image.load(os.path.join(path,'night.png'))

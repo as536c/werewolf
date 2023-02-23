@@ -30,13 +30,22 @@ import os
 
 #killed
 
-path = "werewolf_project/assets/"
+path = "./assets/"
 
+dead = pygame.image.load(os.path.join(path, 'dead.png'))
 invisible = pygame.image.load(os.path.join(path, 'invisible.png'))
 wolf = pygame.image.load(os.path.join(path,'wolf.png'))
 alpha = pygame.image.load(os.path.join(path,'alpha.png'))
 wolftrickster = pygame.image.load(os.path.join(path,'wolftrickster.png'))
+player_highlight = pygame.image.load(os.path.join(path,'player_highlight.png'))
 villager = pygame.image.load(os.path.join(path,'villager.png'))
+villager1 = pygame.image.load(os.path.join(path,'villager1.png'))
+villager2 = pygame.image.load(os.path.join(path,'villager2.png'))
+villager3 = pygame.image.load(os.path.join(path,'villager3.png'))
+villager4 = pygame.image.load(os.path.join(path,'villager4.png'))
+villager5 = pygame.image.load(os.path.join(path,'villager5.png'))
+villager6 = pygame.image.load(os.path.join(path,'villager6.png'))
+villager7 = pygame.image.load(os.path.join(path,'villager7.png'))
 seer = pygame.image.load(os.path.join(path,'seer.png'))
 medium = pygame.image.load(os.path.join(path,'medium.png'))
 bodyguard = pygame.image.load(os.path.join(path,'bodyguard.png'))
@@ -52,16 +61,4 @@ bad2 = [wolf, alpha, wolftrickster]
 bad_check = [wolf, wolftrickster]
 unknown_check = [fool, hunter, sheriff, alpha]
 good_check = [villager, seer, medium, bodyguard, doctor]
-
 role = {
- 1: villager,
- 2: villager,
- 3: villager,
- 4: villager,
- 5: villager,
- 6: villager,
- 7: villager,
- 8: villager,
- 9: villager,
- 10: villager
-}
