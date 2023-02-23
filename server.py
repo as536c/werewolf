@@ -62,7 +62,7 @@ server_socket.bind((HOST, PORT))
 server_socket.listen(5)
 print(f'[*] Listening on {HOST}:{PORT}')
 #connects players
-while challenger < 6:
+while challenger < 3:
     try:
         client_socket, address = server_socket.accept()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
@@ -97,6 +97,7 @@ clients = set()
 clients_lock = threading.Lock()
 
 def handle_client(tcp_socket):
+    import vote
     svrheartbeat = 'sync'
     with tcp_socket as sock:
         while True:
@@ -169,6 +170,33 @@ def handle_client(tcp_socket):
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p1voted':
+                        vote.votes[0] += 1
+                        print(vote.votes)
+                    if com.decode('utf-8') == 'p2voted':
+                        vote.votes[1] += 1
+                        print(vote.votes)
+                    if com.decode('utf-8') == 'p3voted':
+                        vote.votes[2] += 1
+                        print(vote.votes)
+                    if com.decode('utf-8') == 'p4voted':
+                        vote.votes[3] += 1
+                        print(vote.votes)
+                    if com.decode('utf-8') == 'p5voted':
+                        vote.votes[4] += 1
+                        print(vote.votes)
+                    if com.decode('utf-8') == 'votestart':
+                        if vote.votes.count(max(vote.votes)) == 1:
+                            voteres = 'p'+str(vote.votes.index(max(vote.votes))+1)+'dead'
+                            for c in clients:
+                                c.send(voteres.encode('utf-8'))
+                            vote.votes = [0,0,0,0,0]
+                            print(vote.votes)
+                        else:
+                            svrheartbeat = 'tie'
+                            for c in clients:
+                                c.send(svrheartbeat.encode('utf-8'))
+                                print('sent', svrheartbeat)
 
 while True:
     try:
@@ -219,15 +247,12 @@ while True:
 #    udp_socket.close()
 #    sys.exit()
 
-
-
     #send toggle info to clients
     #while True:
     #    ClientMsg = input(' -> ')
     #    client_socket.send(ClientMsg.encode())
     #    client_socket.close()
     
-
     #server needs to update (send heartbeat every game event) the following in the clients:
     # > players states (alive/dead/tricked/protected,etc)
     # > night/day
