@@ -67,3 +67,9 @@ bad_check = [wolf, wolftrickster]
 unknown_check = [fool, hunter, sheriff, alpha]
 good_check = [villager, seer, medium, bodyguard, doctor]
 role = {
+ 1: villager,
+ 2: villager,
+ 3: villager,
+ 4: villager,
+ 5: villager,
+}

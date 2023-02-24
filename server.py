@@ -28,40 +28,22 @@ server_socket.bind((HOST, PORT))
 server_socket.listen(5)
 print(f'[*] Listening on {HOST}:{PORT}')
 
-#randomizes roles (repositioned to initiate connection first before adding roles)
+#sends roles to clients
+rolesend = ''
 for n in range(1, 6):
-    if n != 5:
-        role = random.choice(roles)
-        roles.remove(role)
-        if role == 'bad':
-            role = random.choice(bad)
-            bad.remove(role)
-            with open("wroles.py", "a") as f:
-                f.write(" " + str(n) + ": " + role + ",\n")
-        elif role == 'wildcard':
-            role = random.choice(wildcard)
-            wildcard.remove(role)
-            with open("wroles.py", "a") as f:
-                f.write(" " + str(n) + ": " + role + ",\n")
-        else:
-            with open("wroles.py", "a") as f:
-                f.write(" " + str(n) + ": " + role + ",\n")     # 1: villager,
+    role = random.choice(roles)
+    roles.remove(role)
+    if role == 'bad':
+        role = random.choice(bad)
+        bad.remove(role)
+        rolesend = rolesend + role + ' ' 
+    elif role == 'wildcard':
+        role = random.choice(wildcard)
+        wildcard.remove(role)
+        rolesend = rolesend + role + ' ' 
     else:
-        role = random.choice(roles)
-        roles.remove(role)
-        if role == 'bad':
-            role = random.choice(bad)
-            bad.remove(role)
-            with open("wroles.py", "a") as f:
-                f.write(" " + str(n) + ": " + role + "\n}")
-        elif role == 'wildcard':
-            role = random.choice(wildcard)
-            wildcard.remove(role)
-            with open("wroles.py", "a") as f:
-                f.write(" " + str(n) + ": " + role + "\n}")
-        else:
-            with open("wroles.py", "a") as f:
-                f.write(" " + str(n) + ": " + role + "\n}") 
+        rolesend = rolesend + role + ' '    # 1: villager,
+print(rolesend)
 
 #connects players
 while challenger < 3:
@@ -69,12 +51,6 @@ while challenger < 3:
         client_socket, address = server_socket.accept()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
         print('\nClosing Server Socket...')
-        #remove appended roles in wroles.py, for a fresh start
-        with open("wroles.py", 'r+') as fp:
-            lines = fp.readlines()
-            fp.seek(0)
-            fp.truncate()
-            fp.writelines(lines[:-6])
         server_socket.close()
         sys.exit()    
     print(f'[*] Accepted connection from {address[0]}:{address[1]}')   
@@ -195,67 +171,21 @@ def handle_client(tcp_socket):
                             vote.votes = [0,0,0,0,0]
                             print(vote.votes)
                         else:
-                            svrheartbeat = 'tie'
+                            voteres = 'votetie'
                             for c in clients:
-                                c.send(svrheartbeat.encode('utf-8'))
-                                print('sent', svrheartbeat)
+                                c.send(voteres.encode('utf-8'))
+                                print('sent', voteres)
 
 while True:
     try:
         client, tcp_address = tcp_socket.accept()        
     except KeyboardInterrupt:                        
         print("\nClosing Server Socket...")
-        #remove appended roles in wroles.py, for a fresh start
-        with open("wroles.py", 'r+') as fp:
-            lines = fp.readlines()
-            fp.seek(0)
-            fp.truncate()
-            fp.writelines(lines[:-6])
         tcp_socket.close()
         sys.exit()
-    
+    client.send(rolesend.encode('utf-8'))
     print(f'[*] Accepted connection from {tcp_address[0]}:{tcp_address[1]}')
     with clients_lock:
         clients.add(client)
     client_handler = threading.Thread(target=handle_client, args=(client,))
     client_handler.start()
-
-
-
-#after players connect, this segment should be server constantly accepting commands from client. (not working)     
-#server_socket.close()
-#udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#udp_socket.bind((HOST, PORT))
-#udp_clients = {}
-#print('bound')
-#try:
-#    while True:
-#        data, udp_client = udp_socket.recvfrom (1024)
-#        udp_clients[udp_client] = udp_socket
-#        com = data.decode("utf-8")
-#        print(com)
-#        for client in clients.keys():
-#            time.sleep(2)
-#            udp_socket.sendto(b'from server', client)
-#            print('sent to', client)
-##except KeyboardInterrupt or ConnectionResetError or BrokenPipeError or OSError:
- #   print('\nClosing Server Socket...')
-    #remove appended roles in wroles.py, for a fresh start
-#    with open("wroles.py", 'r+') as fp:
-#        lines = fp.readlines()
-#        fp.seek(0)
-#        fp.truncate()
-#        fp.writelines(lines[:-6])
-#    udp_socket.close()
-#    sys.exit()
-
-    #send toggle info to clients
-    #while True:
-    #    ClientMsg = input(' -> ')
-    #    client_socket.send(ClientMsg.encode())
-    #    client_socket.close()
-    
-    #server needs to update (send heartbeat every game event) the following in the clients:
-    # > players states (alive/dead/tricked/protected,etc)
-    # > night/day
-    # > 

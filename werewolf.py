@@ -58,18 +58,37 @@ response = client_socket.recv(4096)
 challenger_byte = response.decode("utf-8")
 print("Hello, " + player_name + "! You are player", challenger_byte)
 print("Waiting for other players. Please wait while the game initialize...")
-
 # receive toggle info from server
 #toggle = client_socket.recv(1024).decode()
 #print(toggle)
-
 challenger = int(challenger_byte)
-#svrcommand = bytes(command, 'utf-8')
-
 client_socket.close()
 time.sleep(8)
+
+#game initiates
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.connect((HOST, PORT2))
+rolesrcv = tcp_socket.recv(4096)
+rolesplit = rolesrcv.decode('utf-8').strip(' ').split(' ',4)
+r1 = 1
+for r in rolesplit:
+    if r == 'villager':
+        wroles.role[r1] = wroles.villager
+    elif r == 'doctor':
+        wroles.role[r1] = wroles.doctor
+    elif r == 'seer':
+        wroles.role[r1] = wroles.seer
+    elif r == 'hunter':
+        wroles.role[r1] = wroles.hunter
+    elif r == 'fool':
+        wroles.role[r1] = wroles.fool
+    elif r == 'wolf':
+        wroles.role[r1] = wroles.wolf
+    elif r == 'alpha':
+        wroles.role[r1] = wroles.alpha
+    elif r == 'wolftrickster':
+        wroles.role[r1] = wroles.wolftrickster
+    r1 += 1
 
 if players == 5:   
     message = ['Werewolf']
@@ -77,15 +96,6 @@ if players == 5:
     # WIN = main window of game
     WIN = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Werewolf")
-
-    #for n in range(1, players + 1):
-    #    wroles.role[n] = random.choice(roles)
-    #    roles.remove(wroles.role[n])
-    #    if wroles.role[n] == wroles.bad:
-    #        wroles.role[n] = random.choice(wroles.bad)
-    #        wroles.bad.remove(wroles.role[n])
-    #    if wroles.role[n] == wroles.wildcard:
-    #        wroles.role[n] = random.choice(wroles.wildcard)
 
     def draw_window():
         #turns all player card to random villagers
@@ -868,6 +878,9 @@ def sync():
                 self_state[4] = 'dead'
                 message.pop(0)
                 message.append('Player 5 lynched')
+        if 'votetie' in reply:
+            message.pop(0)
+            message.append('All players are safe... for now')        
         if 'day' in reply:
             time_state[0] = 'day'
             kill_chance[0] = 'kill'

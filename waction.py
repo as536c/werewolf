@@ -27,7 +27,7 @@ asssheriff = pygame.image.load(os.path.join(path,'asssheriff.png'))
 assfool = pygame.image.load(os.path.join(path,'assfool.png'))
 asshunter = pygame.image.load(os.path.join(path,'asshunter.png'))
 
-votebutton = wbutton.Button(220,470, vote)
+votebutton = wbutton.Button(220,530, vote)
 killbutton = wbutton.Button(220,530, kill)
 assassinatebutton = wbutton.Button(220,650, assassinate)
 concealbutton = wbutton.Button(220, 590, conceal)
