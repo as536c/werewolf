@@ -6,7 +6,7 @@ import time
 
 #this will append roles in wroles.py file upon server startup. this is to ensure that there will be similar roles across players
 wildcard = ['fool', 'hunter']
-bad = ['wolf', 'alpha', 'wolftrickster']
+bad = ['wolftrickster']
 roles = ['bad', 'villager', 'doctor', 'seer', 'wildcard']
 
 #server states
@@ -46,7 +46,7 @@ for n in range(1, 6):
 print(rolesend)
 
 #connects players
-while challenger < 3:
+while challenger < 4:
     try:
         client_socket, address = server_socket.accept()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
@@ -65,7 +65,7 @@ while challenger < 3:
 
 server_socket.close()
 print('Initializing...')
-time.sleep(5)
+time.sleep(2)
 
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp_socket.bind((HOST, PORT2))
@@ -87,67 +87,80 @@ def handle_client(tcp_socket):
                     if com.decode('utf-8') == 'sync':
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'day':
                         svrheartbeat = 'day'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'night':
                         svrheartbeat = 'night'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
+                        #time.sleep(5)
+                        #for c in clients:
+                        #    c.send(b'night2')
+                        #time.sleep(5)
+                        #for c in clients:
+                        #    c.send(b'night3')
                     if com.decode('utf-8') == 'p1dead':
                         svrheartbeat = 'p1dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p2dead':
                         svrheartbeat = 'p2dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p3dead':
                         svrheartbeat = 'p3dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p4dead':
                         svrheartbeat = 'p4dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p5dead':
                         svrheartbeat = 'p5dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p1alive':
                         svrheartbeat = 'p1alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p2alive':
                         svrheartbeat = 'p2alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p3alive':
                         svrheartbeat = 'p3alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p4alive':
                         svrheartbeat = 'p4alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
                     if com.decode('utf-8') == 'p5alive':
                         svrheartbeat = 'p5alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
-                            print('sent', svrheartbeat)
+                    if com.decode('utf-8') == 'p1tricked':
+                        trick = 'p1tricked'
+                        for c in clients:
+                            c.send(trick.encode('utf-8'))
+                    if com.decode('utf-8') == 'p2tricked':
+                        trick = 'p2tricked'
+                        for c in clients:
+                            c.send(trick.encode('utf-8'))
+                    if com.decode('utf-8') == 'p3tricked':
+                        trick = 'p3tricked'
+                        for c in clients:
+                            c.send(trick.encode('utf-8'))
+                    if com.decode('utf-8') == 'p4tricked':
+                        trick = 'p4tricked'
+                        for c in clients:
+                            c.send(trick.encode('utf-8'))
+                    if com.decode('utf-8') == 'p5tricked':
+                        trick = 'p5tricked'
+                        for c in clients:
+                            c.send(trick.encode('utf-8'))
                     if com.decode('utf-8') == 'p1voted':
                         vote.votes[0] += 1
                         print(vote.votes)
@@ -164,17 +177,17 @@ def handle_client(tcp_socket):
                         vote.votes[4] += 1
                         print(vote.votes)
                     if com.decode('utf-8') == 'votestart':
+                        svrheartbeat = 'sync'
                         if vote.votes.count(max(vote.votes)) == 1:
                             voteres = 'p'+str(vote.votes.index(max(vote.votes))+1)+'lynch'
                             for c in clients:
                                 c.send(voteres.encode('utf-8'))
                             vote.votes = [0,0,0,0,0]
-                            print(vote.votes)
-                        else:
-                            voteres = 'votetie'
-                            for c in clients:
-                                c.send(voteres.encode('utf-8'))
-                                print('sent', voteres)
+                        #else:
+                        #    voteres = 'votetie'
+                        #    for c in clients:
+                        #        c.send(voteres.encode('utf-8'))
+                        #        print('sent', voteres)
 
 while True:
     try:

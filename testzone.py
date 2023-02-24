@@ -9,6 +9,7 @@ else:
 rolesend = 'doctor seer hunter villager alpha '
 rolesplit = rolesend.strip(' ').split(' ',4)
 r1 = 1
+print(rolesplit)
 for r in rolesplit:
     if r == 'villager':
         wroles.role[r1] = wroles.villager
@@ -27,4 +28,4 @@ for r in rolesplit:
     elif r == 'wolftrickster':
         wroles.role[r1] = wroles.wolftrickster
     r1 += 1
-print(wroles.role)
+print(wroles.roles)
