@@ -46,7 +46,7 @@ for n in range(1, 6):
 print(rolesend)
 
 #connects players
-while challenger < 4:
+while challenger < 6:
     try:
         client_socket, address = server_socket.accept()
     except KeyboardInterrupt or ConnectionResetError or BrokenPipeError:
@@ -60,7 +60,7 @@ while challenger < 4:
     challenger += 1
     client_socket.send(chal_bytes)
     x = request.decode("utf-8")
-    print("Player name:", x)  
+    print(x)  
     client_socket.close()
 
 server_socket.close()
@@ -84,6 +84,35 @@ def handle_client(tcp_socket):
                 break
             else:
                 with clients_lock:
+                    if '#1' in com.decode('utf-8'):
+                        vote.p1 = com.decode('utf-8')
+                        vote.players = vote.p1 + vote.p2 + vote.p3 + vote.p4 + vote.p5
+                        print(vote.players)
+                    if '#2' in com.decode('utf-8'):
+                        vote.p2 = com.decode('utf-8')
+                        vote.players = vote.p1 + vote.p2 + vote.p3 + vote.p4 + vote.p5
+                        print(vote.players)
+                    if '#3' in com.decode('utf-8'):
+                        vote.p3 = com.decode('utf-8')
+                        vote.players = vote.p1 + vote.p2 + vote.p3 + vote.p4 + vote.p5
+                        print(vote.players)
+                    if '#4' in com.decode('utf-8'):
+                        vote.p4 = com.decode('utf-8')
+                        vote.players = vote.p1 + vote.p2 + vote.p3 + vote.p4 + vote.p5
+                        print(vote.players)
+                    if '#5' in com.decode('utf-8'):
+                        vote.p5 = com.decode('utf-8')
+                        vote.players = vote.p1 + vote.p2 + vote.p3 + vote.p4 + vote.p5
+                        print(vote.players)
+                    if com.decode('utf-8') == 'ready':
+                        vote.readycount += 1
+                        print(vote.readycount)
+                        if vote.readycount == 5:
+                            vote.players = vote.p1 + vote.p2 + vote.p3 + vote.p4 + vote.p5
+                            print(vote.players)
+                            svrheartbeat = 'endmenu' + vote.players
+                            for c in clients:
+                                c.send(svrheartbeat.encode('utf-8')) 
                     if com.decode('utf-8') == 'sync':
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))

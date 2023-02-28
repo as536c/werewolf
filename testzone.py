@@ -1,31 +1,15 @@
-import wroles
-votes = [1,1,5,2,3]
-if votes.count(max(votes)) == 1:
-    voteres = 'p'+str(votes.index(max(votes))+1)+'dead'
-    print(voteres.encode('utf-8'))
-else:
-    print('tie')
+#changes when testing
+#werewolf.py
+#challenger = int(challenger_byte)
+#client_socket.close()
+#time.sleep(8)
+#vote.p1 = chars[0][1:] or '' (make it only the number of players youre testing)
 
-rolesend = 'doctor seer hunter villager alpha '
-rolesplit = rolesend.strip(' ').split(' ',4)
-r1 = 1
-print(rolesplit)
-for r in rolesplit:
-    if r == 'villager':
-        wroles.role[r1] = wroles.villager
-    elif r == 'doctor':
-        wroles.role[r1] = wroles.doctor
-    elif r == 'seer':
-        wroles.role[r1] = wroles.seer
-    elif r == 'hunter':
-        wroles.role[r1] = wroles.hunter
-    elif r == 'fool':
-        wroles.role[r1] = wroles.fool
-    elif r == 'wolf':
-        wroles.role[r1] = wroles.wolf
-    elif r == 'alpha':
-        wroles.role[r1] = wroles.alpha
-    elif r == 'wolftrickster':
-        wroles.role[r1] = wroles.wolftrickster
-    r1 += 1
-print(wroles.roles)
+#server.py
+#while challenger < 4:
+#if vote.readycount == 3:
+#sleep
+
+wew = '#pogi#fsfsdfs#1234123wer#dfdf'
+wews = wew.strip('#').split('#')
+print(wews)

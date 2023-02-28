@@ -1,1 +1,14 @@
 votes = [0,0,0,0,0]
+readycount = 0
+active = False
+player_name = ''
+rectx = 250
+recty = 430
+recta = 140
+rectb = 32
+p1 = ''
+p2 = ''
+p3 = ''
+p4 = ''
+p5 = ''
+players = p1+p2+p3+p4+p5
