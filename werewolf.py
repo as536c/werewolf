@@ -16,8 +16,6 @@ HOST = '127.0.0.1'
 PORT = 8888
 PORT2 = 5556
 white = (255, 255, 255)
-green = (0, 255, 0)
-blue = (0)
 players = 5
 
 #player initial states
@@ -64,7 +62,7 @@ print("Waiting for other players. Please wait while the game initialize...")
 #print(toggle)
 challenger = int(challenger_byte)
 client_socket.close()
-time.sleep(8)
+time.sleep(5)
 
 #game initiates
 tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,7 +91,9 @@ for r in rolesplit:
 
 if players == 5:   
     message = ['Werewolf']
-    message[0] = 'Welcome to Werewolf! You are player ' + str(challenger)
+    popup = ['']
+    message.pop(0)
+    message.append('Welcome to Werewolf! You are player ' + str(challenger))
     BGmenu = (234, 212, 252)
     # WIN = main window of game
     WIDTH, HEIGHT = 640, 790
@@ -109,19 +109,24 @@ if players == 5:
         pygame.display.set_caption("Werewolf - waiting room")
         if game_start[0] == 'menu' and ready_chance[0] == 'notready':
             invisible = wbutton.Button(410,510,wroles.invisible)
+            logo = wbutton.Button(30,25,wroles.logo)
             if pygame.Rect(410,510,200,250).collidepoint(pygame.mouse.get_pos()):
                 invisible = wbutton.Button(410,510,wroles.role[challenger])
             if invisible.draw_button(WIN):
-                print('click')
+                print('')
+            if logo.draw_button(WIN):
+                print('')
             if waction.readybutton.draw_button(WIN):
-                ready_chance[0] = 'ready'
                 pnameadd = '#' + str(challenger) + vote.player_name
                 tcp_socket.send(pnameadd.encode('utf-8'))
-                time.sleep(0.5)
+                ready_chance[0] = 'ready'
+                time.sleep(0.2)
                 tcp_socket.send(b'ready')
+        elif game_start[0] == 'menu' and ready_chance[0] == 'ready':
+            message[0] = 'Waiting for other players . . .'
         elif game_start[0] == 'commence':
             pygame.display.set_caption("Werewolf")
-            
+            message[0] = 'Werewolf'
             #turns all player card to random villagers
             if 'dead' in p1_state:
                 player1 = wbutton.Button(10,530,wroles.dead)
@@ -164,7 +169,7 @@ if players == 5:
                 if 'alive' in p4_state:
                     player4 = wbutton.Button(430,10,wroles.role[4])
             elif challenger == 5:
-                player_highlight = wbutton.Button(424,534,wroles.player_highlight)
+                player_highlight = wbutton.Button(424,524,wroles.player_highlight)
                 if 'alive' in p5_state:
                     player5 = wbutton.Button(430,530,wroles.role[5])
 
@@ -172,15 +177,20 @@ if players == 5:
             if time_state[0] == 'night':
                 BG = (0, 0, 139)
                 WIN.fill(BG)
+                vote.textcolor = (255, 211, 103)
                 if challenger == 1:
                     if switchtime1.draw_button(WIN):
+                        popup.pop(0)
+                        popup.append('Here comes the sun')
                         tcp_socket.send(b'day')
-                        print('day')
             elif time_state[0] == 'day':
                 BG = (255, 255, 51)
                 WIN.fill(BG)
+                vote.textcolor = (0, 0, 139)
                 if challenger == 1:
                     if switchtime2.draw_button(WIN):
+                        popup.pop(0)
+                        popup.append('Exit light')
                         tcp_socket.send(b'night')
 
             #draws the highlight of your card
@@ -191,26 +201,36 @@ if players == 5:
             if pygame.Rect(10,530,200,250).collidepoint(pygame.mouse.get_pos()) and 'alive' in p1_state:
                     if challenger != 1:
                         player1 = wbutton.Button(13,533,wroles.villager3)
+                        message.pop(0)
+                        message.append(vote.p1)
                         if player1.draw_button(WIN):
                             player1 = wbutton.Button(16,537,wroles.villager3clicked)
             if pygame.Rect(10,10,200,250).collidepoint(pygame.mouse.get_pos()) and 'alive' in p2_state:
                     if challenger != 2:
                         player2 = wbutton.Button(13,13,wroles.villager4)
+                        message.pop(0)
+                        message.append(vote.p2)
                         if player2.draw_button(WIN):
                             player2 = wbutton.Button(16,17,wroles.villager4clicked)
             if pygame.Rect(220,10,200,250).collidepoint(pygame.mouse.get_pos()) and 'alive' in p3_state:
                     if challenger != 3:
                         player3 = wbutton.Button(223,13,wroles.villager5)
+                        message.pop(0)
+                        message.append(vote.p3)
                         if player3.draw_button(WIN):
                             player3 = wbutton.Button(226,17,wroles.villager5clicked)
             if pygame.Rect(430,10,200,250).collidepoint(pygame.mouse.get_pos()) and 'alive' in p4_state:
                     if challenger != 4:
                         player4 = wbutton.Button(433,13,wroles.villager6)
+                        message.pop(0)
+                        message.append(vote.p4)
                         if player4.draw_button(WIN):
                             player4 = wbutton.Button(436,17,wroles.villager6clicked)
             if pygame.Rect(430,530,200,250).collidepoint(pygame.mouse.get_pos()) and 'alive' in p5_state:
                     if challenger != 5:
                         player5 = wbutton.Button(433,533,wroles.villager7)
+                        message.pop(0)
+                        message.append(vote.p5)
                         if player5.draw_button(WIN):
                             player5 = wbutton.Button(436,537,wroles.villager7clicked)
                             
@@ -218,8 +238,8 @@ if players == 5:
             if time_state[0] == 'night' and self_state[challenger-1] == 'alive':
                 if wroles.role[challenger] in wroles.bad2 and kill_chance[0] == 'kill':# and night_phase[0] == 'third':
                     if waction.killbutton.draw_button(WIN):
-                        message.pop(0)
-                        message.append('Select player to kill')
+                        popup.pop(0)
+                        popup.append('Select player to kill')
                         waction.action = 'killing'
                     #if waction.assassinatebutton.draw_button(WIN):
                     #    print('assassinate')
@@ -231,13 +251,13 @@ if players == 5:
                     #        waction.action = 'concealing'
                 if wroles.role[challenger] == wroles.wolftrickster and trick_chance[0] == 'trick':# and night_phase[0] == 'first':
                     if waction.trickbutton.draw_button(WIN):
-                        message.pop(0)
-                        message.append('Select player to trick')
+                        popup.pop(0)
+                        popup.append('Select player to trick')
                         waction.action = 'tricking'
                 elif wroles.role[challenger] == wroles.seer and check_chance[0] == 'check':# and night_phase[0] == 'second':
                     if waction.checkbutton.draw_button(WIN):
-                        message.pop(0)
-                        message.append('Select player to check')
+                        popup.pop(0)
+                        popup.append('Select player to check')
                         waction.action = 'checking'
                 #elif wroles.role[challenger] == wroles.medium:
                 #    if waction.seedeadbutton.draw_button(WIN):
@@ -253,84 +273,82 @@ if players == 5:
                 #        waction.action = 'shooting'
                 elif wroles.role[challenger] == wroles.doctor and revive_chance[0] == 'revive':# and night_phase[0] == 'first':
                     if waction.revivebutton.draw_button(WIN):
-                        message.pop(0)
-                        message.append('Select player to revive')
+                        popup.pop(0)
+                        popup.append('Select player to revive')
                         waction.action = 'reviving'
             elif self_state[challenger-1] == 'alive' and vote_chance[0] == 'vote':
                 if waction.votebutton.draw_button(WIN):
-                    message.pop(0)
-                    message.append('Select player to vote')
+                    popup.pop(0)
+                    popup.append('Select player to vote')
                     waction.action = 'voting'
 
             #what happens when player1 is clicked (player1.draw_button(WIN) only returns true or false)
             if player1.draw_button(WIN):
-                message.pop(0)
-                message.append(vote.p1)
                 if waction.action == 'checking':
                     if wroles.role[1] in wroles.bad_check:
                         if 'tricked' in p1_state:
-                            message.pop(0)
-                            message.append(vote.p1 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p1 + ' is good')
                             p1_state.remove('tricked')
                             check_chance[0] = 'nocheck'
                         else:
-                            message.pop(0)
-                            message.append(vote.p1 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p1 + ' is bad')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[1] in wroles.good_check:
                         if 'tricked' in p1_state:
-                            message.pop(0)
-                            message.append(vote.p1 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p1 + ' is bad')
                             check_chance[0] = 'nocheck'
                             p1_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p1 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p1 + ' is good')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[1] in wroles.unknown_check:  
-                        message.pop(0)
-                        message.append(vote.p1 + ' side is unknown')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' side is unknown')
                         check_chance[0] = 'nocheck'
                         waction.action = ''
                 #if waction.action == 'protecting':
                 #    if 'alive' in p1_state:
-                #        message.pop(0)
-                #        message.append('player is being protected')
+                #        popup.pop(0)
+                #        popup.append('player is being protected')
                 #        p1_state.append('protected')
                 #        print(p1_state)
                 #        waction.action = ''
                 if waction.action == 'reviving':
                     if 'dead' in p1_state:
-                        message.pop(0)
-                        message.append(vote.p1 + ' revived')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' revived')
                         p1_state.remove('dead')
                         p1_state.append('alive')
                         self_state[0] = 'alive'
                         revive_chance[0] = 'norevive'
                         tcp_socket.send(b'p1alive')
                     else:
-                        message.pop(0)
-                        message.append(vote.p1 + ' is still alive')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' is still alive')
                         waction.action = ''
                 #if waction.action == 'shooting':
                 #    if 'alive' in p1_state:
-                #        message.pop(0)
-                #        message.append('player shot')
+                #        popup.pop(0)
+                #        popup.append('player shot')
                 #        p1_state.remove('alive')
                 #        p1_state.append('dead')
                 #        print(p1_state)
                 #        waction.action = ''
                 #if waction.action == 'seeing':
                 #    if 'dead' in p1_state:
-                #        message.pop(0)
-                #        message.append('player message here')
+                #        popup.pop(0)
+                #        popup.append('player message here')
                 #        waction.action = ''
                 if waction.action == 'killing':
                     if 'alive' in p1_state:
-                        message.pop(0)
-                        message.append(vote.p1 + ' killed')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' killed')
                         p1_state.remove('alive')
                         p1_state.append('dead')
                         self_state[0] = 'dead'
@@ -338,31 +356,31 @@ if players == 5:
                         waction.action = ''
                         kill_chance[0] = 'nokill'
                     else:
-                        message.pop(0)
-                        message.append(vote.p1 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' already dead')
                         waction.action = ''
                 if waction.action == 'tricking':
                     if 'alive' in p1_state:
-                        message.pop(0)
-                        message.append(vote.p1 + ' tricked')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' tricked')
                         p1_state.append('tricked')
                         tcp_socket.send(b'p1tricked')
                         waction.action = ''
                         trick_chance[0] = 'notrick'
                     else:
-                        message.pop(0)
-                        message.append(vote.p1 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' already dead')
                         waction.action = ''
                 if waction.action == 'voting':
                     if 'alive' in p1_state:
-                        message.pop(0)
-                        message.append(vote.p1 + ' voted to be lynched')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' voted to be lynched')
                         tcp_socket.send(b'p1voted')
                         waction.action = ''
                         vote_chance[0] = 'novote'
                     else:
-                        message.pop(0)
-                        message.append(vote.p1 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p1 + ' already dead')
                         waction.action = ''
 
                 #assassinate (TO BE IMPLEMENTED, TOO COMPLEX FOR MULTIPLAYER)        
@@ -377,15 +395,15 @@ if players == 5:
                 #                    assassination = False
                 #            if waction.assvillagerbutton.draw_button(WIN):
                 #                if wroles.role[1] == wroles.villager:
-                #                    message.pop(0)
-                #                    message.append('player assassinated')
+                #                    popup.pop(0)
+                #                    popup.append('player assassinated')
                 #                    p1_state.remove('alive')
                 #                    p1_state.append('dead')
                 #                    print(p1_state)
                 #                    assassination = False
                 #                else:
-                #                    message.pop(0)
-                #                    message.append('player1')  
+                #                    popup.pop(0)
+                #                    popup.append('player1')  
                 #                    assassination = False         
                 #            if waction.assseerbutton.draw_button(WIN):
                 #                if wroles.role[1] == wroles.seer:
@@ -465,53 +483,51 @@ if players == 5:
                 
 
             if player2.draw_button(WIN):
-                message.pop(0)
-                message.append(vote.p2)
                 if waction.action == 'checking':
                     if wroles.role[2] in wroles.bad_check:
                         if 'tricked' in p2_state:
-                            message.pop(0)
-                            message.append(vote.p2 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p2 + ' is good')
                             check_chance[0] = 'nocheck'
                             p2_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p2 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p2 + ' is bad')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[2] in wroles.good_check:
                         if 'tricked' in p2_state:
-                            message.pop(0)
-                            message.append(vote.p2 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p2 + ' is bad')
                             check_chance[0] = 'nocheck'
                             p2_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p2 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p2 + ' is good')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[2] in wroles.unknown_check:  
-                        message.pop(0)
-                        message.append(vote.p2 + ' side is unknown')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' side is unknown')
                         check_chance[0] = 'nocheck'
                         waction.action = ''
                 if waction.action == 'reviving':
                     if 'dead' in p2_state:
-                        message.pop(0)
-                        message.append(vote.p2 + ' revived')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' revived')
                         p2_state.remove('dead')
                         p2_state.append('alive')
                         self_state[1] = 'alive'
                         revive_chance[0] = 'norevive'
                         tcp_socket.send(b'p2alive')
                     else:
-                        message.pop(0)
-                        message.append(vote.p2 + ' is still alive')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' is still alive')
                         waction.action = ''
                 if waction.action == 'killing':
                     if 'alive' in p2_state:
-                        message.pop(0)
-                        message.append(vote.p2 + ' killed')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' killed')
                         p2_state.remove('alive')
                         p2_state.append('dead')
                         self_state[1] = 'dead'
@@ -519,81 +535,79 @@ if players == 5:
                         waction.action = ''
                         kill_chance[0] = 'nokill'
                     else:
-                        message.pop(0)
-                        message.append(vote.p2 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' already dead')
                         waction.action = ''
                 if waction.action == 'tricking':
                     if 'alive' in p2_state:
-                        message.pop(0)
-                        message.append(vote.p2 + ' tricked')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' tricked')
                         p2_state.append('tricked')
                         tcp_socket.send(b'p2tricked')
                         waction.action = ''
                         trick_chance[0] = 'notrick'
                     else:
-                        message.pop(0)
-                        message.append(vote.p2 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' already dead')
                         waction.action = ''
                 if waction.action == 'voting':
                     if 'alive' in p2_state:
-                        message.pop(0)
-                        message.append(vote.p2 + ' voted to be lynched')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' voted to be lynched')
                         tcp_socket.send(b'p2voted')
                         waction.action = ''
                         vote_chance[0] = 'novote'
                     else:
-                        message.pop(0)
-                        message.append(vote.p2 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p2 + ' already dead')
                         waction.action = ''
 
             if player3.draw_button(WIN):
-                message.pop(0)
-                message.append(vote.p3)
                 if waction.action == 'checking':
                     if wroles.role[3] in wroles.bad_check:
                         if 'tricked' in p3_state:
-                            message.pop(0)
-                            message.append(vote.p3 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p3 + ' is good')
                             check_chance[0] = 'nocheck'
                             p3_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p3 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p3 + ' is bad')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[3] in wroles.good_check:
                         if 'tricked' in p3_state:
-                            message.pop(0)
-                            message.append(vote.p3 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p3 + ' is bad')
                             check_chance[0] = 'nocheck'
                             p3_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p3 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p3 + ' is good')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[3] in wroles.unknown_check:  
-                        message.pop(0)
-                        message.append(vote.p3 + ' side is unknown')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' side is unknown')
                         check_chance[0] = 'nocheck'
                         waction.action = ''
                 if waction.action == 'reviving':
                     if 'dead' in p3_state:
-                        message.pop(0)
-                        message.append(vote.p3 + ' revived')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' revived')
                         p3_state.remove('dead')
                         p3_state.append('alive')
                         self_state[2] = 'alive'
                         revive_chance[0] = 'norevive'
                         tcp_socket.send(b'p3alive')
                     else:
-                        message.pop(0)
-                        message.append(vote.p3 + ' is still alive')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' is still alive')
                         waction.action = ''
                 if waction.action == 'killing':
                     if 'alive' in p3_state:
-                        message.pop(0)
-                        message.append(vote.p3 + ' killed')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' killed')
                         p3_state.remove('alive')
                         p3_state.append('dead')
                         self_state[2] = 'dead'
@@ -601,81 +615,79 @@ if players == 5:
                         waction.action = ''
                         kill_chance[0] = 'nokill'
                     else:
-                        message.pop(0)
-                        message.append(vote.p3 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' already dead')
                         waction.action = ''
                 if waction.action == 'tricking':
                     if 'alive' in p3_state:
-                        message.pop(0)
-                        message.append(vote.p3 + ' tricked')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' tricked')
                         p3_state.append('tricked')
                         tcp_socket.send(b'p3tricked')
                         waction.action = ''
                         trick_chance[0] = 'notrick'
                     else:
-                        message.pop(0)
-                        message.append(vote.p3 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' already dead')
                         waction.action = ''
                 if waction.action == 'voting':
                     if 'alive' in p3_state:
-                        message.pop(0)
-                        message.append(vote.p3 + ' voted to be lynched')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' voted to be lynched')
                         tcp_socket.send(b'p3voted')
                         waction.action = ''
                         vote_chance[0] = 'novote'
                     else:
-                        message.pop(0)
-                        message.append(vote.p3 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p3 + ' already dead')
                         waction.action = ''
 
             if player4.draw_button(WIN):
-                message.pop(0)
-                message.append(vote.p4)
                 if waction.action == 'checking':
                     if wroles.role[4] in wroles.bad_check:
                         if 'tricked' in p4_state:
-                            message.pop(0)
-                            message.append(vote.p4 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p4 + ' is good')
                             check_chance[0] = 'nocheck'
                             p4_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p4 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p4 + ' is bad')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[4] in wroles.good_check:
                         if 'tricked' in p4_state:
-                            message.pop(0)
-                            message.append(vote.p4 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p4 + ' is bad')
                             check_chance[0] = 'nocheck'
                             p4_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p4 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p4 + ' is good')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[4] in wroles.unknown_check:  
-                        message.pop(0)
-                        message.append(vote.p4 + ' side is unknown')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' side is unknown')
                         check_chance[0] = 'nocheck'
                         waction.action = ''
                 if waction.action == 'reviving':
                     if 'dead' in p4_state:
-                        message.pop(0)
-                        message.append(vote.p4 + ' revived')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' revived')
                         p4_state.remove('dead')
                         p4_state.append('alive')
                         self_state[3] = 'alive'
                         revive_chance[0] = 'norevive'
                         tcp_socket.send(b'p4alive')
                     else:
-                        message.pop(0)
-                        message.append(vote.p4 + ' is still alive')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' is still alive')
                         waction.action = ''
                 if waction.action == 'killing':
                     if 'alive' in p4_state:
-                        message.pop(0)
-                        message.append(vote.p4 + ' killed')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' killed')
                         p4_state.remove('alive')
                         p4_state.append('dead')
                         self_state[3] = 'dead'
@@ -683,81 +695,79 @@ if players == 5:
                         waction.action = ''
                         kill_chance[0] = 'nokill'
                     else:
-                        message.pop(0)
-                        message.append(vote.p4 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' already dead')
                         waction.action = ''
                 if waction.action == 'tricking':
                     if 'alive' in p4_state:
-                        message.pop(0)
-                        message.append(vote.p4 + ' tricked')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' tricked')
                         p4_state.append('tricked')
                         tcp_socket.send(b'p4tricked')
                         waction.action = ''
                         trick_chance[0] = 'notrick'
                     else:
-                        message.pop(0)
-                        message.append(vote.p4 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' already dead')
                         waction.action = ''
                 if waction.action == 'voting':
                     if 'alive' in p4_state:
-                        message.pop(0)
-                        message.append(vote.p4 + ' voted to be lynched')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' voted to be lynched')
                         tcp_socket.send(b'p4voted')
                         waction.action = ''
                         vote_chance[0] = 'novote'
                     else:
-                        message.pop(0)
-                        message.append(vote.p4 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p4 + ' already dead')
                         waction.action = ''
 
             if player5.draw_button(WIN):
-                message.pop(0)
-                message.append(vote.p5)
                 if waction.action == 'checking':
                     if wroles.role[5] in wroles.bad_check:
                         if 'tricked' in p5_state:
-                            message.pop(0)
-                            message.append(vote.p5 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p5 + ' is good')
                             check_chance[0] = 'nocheck'
                             p5_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p5 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p5 + ' is bad')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[5] in wroles.good_check:
                         if 'tricked' in p5_state:
-                            message.pop(0)
-                            message.append(vote.p5 + ' is bad')
+                            popup.pop(0)
+                            popup.append(vote.p5 + ' is bad')
                             check_chance[0] = 'nocheck'
                             p5_state.remove('tricked')
                         else:
-                            message.pop(0)
-                            message.append(vote.p5 + ' is good')
+                            popup.pop(0)
+                            popup.append(vote.p5 + ' is good')
                             check_chance[0] = 'nocheck'
                         waction.action = ''
                     elif wroles.role[5] in wroles.unknown_check:  
-                        message.pop(0)
-                        message.append(vote.p5 + ' side is unknown')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' side is unknown')
                         check_chance[0] = 'nocheck'
                         waction.action = ''
                 if waction.action == 'reviving':
                     if 'dead' in p5_state:
-                        message.pop(0)
-                        message.append(vote.p5 + ' revived')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' revived')
                         p5_state.remove('dead')
                         p5_state.append('alive')
                         self_state[4] = 'alive'
                         revive_chance[0] = 'norevive'
                         tcp_socket.send(b'p5alive')
                     else:
-                        message.pop(0)
-                        message.append(vote.p5 + ' is still alive')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' is still alive')
                         waction.action = ''
                 if waction.action == 'killing':
                     if 'alive' in p5_state:
-                        message.pop(0)
-                        message.append(vote.p5 + ' killed')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' killed')
                         p5_state.remove('alive')
                         p5_state.append('dead')
                         self_state[4] = 'dead'
@@ -765,90 +775,134 @@ if players == 5:
                         waction.action = ''
                         kill_chance[0] = 'nokill'
                     else:
-                        message.pop(0)
-                        message.append(vote.p5 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' already dead')
                         waction.action = ''
                 if waction.action == 'tricking':
                     if 'alive' in p5_state:
-                        message.pop(0)
-                        message.append(vote.p5 + ' tricked')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' tricked')
                         p5_state.append('tricked')
                         tcp_socket.send(b'p5tricked')
                         waction.action = ''
                         trick_chance[0] = 'notrick'
                     else:
-                        message.pop(0)
-                        message.append(vote.p5 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' already dead')
                         waction.action = ''
                 if waction.action == 'voting':
                     if 'alive' in p5_state:
-                        message.pop(0)
-                        message.append(vote.p5 + ' voted to be lynched')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' voted to be lynched')
                         tcp_socket.send(b'p5voted')
                         waction.action = ''
                         vote_chance[0] = 'novote'
                     else:
-                        message.pop(0)
-                        message.append(vote.p5 + ' already dead')
+                        popup.pop(0)
+                        popup.append(vote.p5 + ' already dead')
                         waction.action = ''
 
 def sync():
     time.sleep(3)
     
     while True:
+        popup.pop(0)
+        popup.append('')
         tcp_socket.send(b'sync')
         reply = tcp_socket.recv(512).decode('utf-8')
         if '#' in reply:
-            chars = reply.strip('endmenu').strip('sync').strip('#').split('#')
-            if 'endmenu' in chars:
-                chars.remove('endmenu')
-            if 'sync' in chars:
-                chars.remove('sync')
+            if 'endmenu' in reply:
+                char = reply.replace('endmenu', '')
+            if 'sync' in reply:
+                char = reply.replace('sync', '')
+            if 'day' in reply:
+                char = reply.replace('day', '')
+            if 'night' in reply:
+                char = reply.replace('night', '')
+            if 'p1dead' in reply:
+                char = reply.replace('p1dead', '')
+            if 'p2dead' in reply:
+                char = reply.replace('p2dead', '')
+            if 'p3dead' in reply:
+                char = reply.replace('p3dead', '')
+            if 'p4dead' in reply:
+                char = reply.replace('p4dead', '')
+            if 'p5dead' in reply:
+                char = reply.replace('p5dead', '')
+            if 'p1alive' in reply:
+                char = reply.replace('p1alive', '')
+            if 'p2alive' in reply:
+                char = reply.replace('p2alive', '')
+            if 'p3alive' in reply:
+                char = reply.replace('p3alive', '')
+            if 'p4alive' in reply:
+                char = reply.replace('p4alive', '')
+            if 'p5alive' in reply:
+                char = reply.replace('p5alive', '')
+            if 'p1tricked' in reply:
+                char = reply.replace('p1tricked', '')
+            if 'p2tricked' in reply:
+                char = reply.replace('p2tricked', '')
+            if 'p3tricked' in reply:
+                char = reply.replace('p3tricked', '')
+            if 'p4tricked' in reply:
+                char = reply.replace('p4tricked', '')
+            if 'p5tricked' in reply:
+                char = reply.replace('p5tricked', '')
+            if 'p1lynched' in reply:
+                char = reply.replace('p1lynched', '')
+            if 'p2lynched' in reply:
+                char = reply.replace('p2lynched', '')
+            if 'p3lynched' in reply:
+                char = reply.replace('p3lynched', '')
+            if 'p4lynched' in reply:
+                char = reply.replace('p4lynched', '')
+            if 'p5lynched' in reply:
+                char = reply.replace('p5lynched', '')
+            chars = char.strip('endmenu').strip('sync').strip('#').split('#')
             vote.p1 = chars[0][1:] or ''
             vote.p2 = chars[1][1:] or ''
-            vote.p3 = chars[2][1:] or ''
-            vote.p4 = chars[3][1:] or ''
-            vote.p5 = chars[4][1:] or ''
         if 'endmenu' in reply:
             game_start[0] = 'commence'
+            print(reply)
         if 'p1lynch' in reply:
             if 'alive' in p1_state:
                 p1_state.remove('alive')
                 p1_state.append('dead')
                 self_state[0] = 'dead'
-                message.pop(0)
-                message.append(vote.p1 + ' lynched')
+                popup.pop(0)
+                popup.append(vote.p1 + ' lynched')
         if 'p2lynch' in reply:
             if 'alive' in p2_state:
                 p2_state.remove('alive')
                 p2_state.append('dead')
                 self_state[1] = 'dead'
-                message.pop(0)
-                message.append(vote.p2 + ' lynched')
+                popup.pop(0)
+                popup.append(vote.p2 + ' lynched')
         if 'p3lynch' in reply:
             if 'alive' in p3_state:
                 p3_state.remove('alive')
                 p3_state.append('dead')
                 self_state[2] = 'dead'
-                message.pop(0)
-                message.append(vote.p3 + ' lynched')
+                popup.pop(0)
+                popup.append(vote.p3 + ' lynched')
         if 'p4lynch' in reply:
             if 'alive' in p4_state:
                 p4_state.remove('alive')
                 p4_state.append('dead')
                 self_state[3] = 'dead'
-                message.pop(0)
-                message.append(vote.p4 + ' lynched')
+                popup.pop(0)
+                popup.append(vote.p4 + ' lynched')
         if 'p5lynch' in reply:
             if 'alive' in p5_state:
                 p5_state.remove('alive')
                 p5_state.append('dead')
                 self_state[4] = 'dead'
-                message.pop(0)
-                message.append(vote.p5 + ' lynched')
+                popup.pop(0)
+                popup.append(vote.p5 + ' lynched')
         #if 'votetie' in reply:
-        #    message.pop(0)
-        #    message.append('All players are safe... for now') 
+        #    popup.pop(0)
+        #    popup.append('All players are safe... for now') 
         if 'p1tricked' in reply:
             p1_state.append('tricked')    
         if 'p2tricked' in reply:
@@ -879,71 +933,71 @@ def sync():
                     p1_state.remove('alive')
                     p1_state.append('dead')
                     self_state[0] = 'dead'
-                    message.pop(0)
-                    message.append(vote.p1 + ' killed')
+                    popup.pop(0)
+                    popup.append(vote.p1 + ' killed')
             if 'p2dead' in reply:
                 if 'alive' in p2_state:
                     p2_state.remove('alive')
                     p2_state.append('dead')
                     self_state[1] = 'dead'
-                    message.pop(0)
-                    message.append(vote.p2 + ' killed')
+                    popup.pop(0)
+                    popup.append(vote.p2 + ' killed')
             if 'p3dead' in reply:
                 if 'alive' in p3_state:
                     p3_state.remove('alive')
                     p3_state.append('dead')
                     self_state[2] = 'dead'
-                    message.pop(0)
-                    message.append(vote.p3 + ' killed')
+                    popup.pop(0)
+                    popup.append(vote.p3 + ' killed')
             if 'p4dead' in reply:
                 if 'alive' in p4_state:
                     p4_state.remove('alive')
                     p4_state.append('dead')
                     self_state[3] = 'dead'
-                    message.pop(0)
-                    message.append(vote.p4 + ' killed')
+                    popup.pop(0)
+                    popup.append(vote.p4 + ' killed')
             if 'p5dead' in reply:
                 if 'alive' in p5_state:
                     p5_state.remove('alive')
                     p5_state.append('dead')
                     self_state[4] = 'dead'
-                    message.pop(0)
-                    message.append(vote.p5 + ' killed')
+                    popup.pop(0)
+                    popup.append(vote.p5 + ' killed')
             if 'p1alive' in reply:
                 if 'dead' in p1_state:
                     p1_state.remove('dead')
                     p1_state.append('alive')
                     self_state[0] = 'alive'
-                    message.pop(0)
-                    message.append(vote.p1 + ' revived')
+                    popup.pop(0)
+                    popup.append(vote.p1 + ' revived')
             if 'p2alive' in reply:
                 if 'dead' in p2_state:
                     p2_state.remove('dead')
                     p2_state.append('alive')
                     self_state[1] = 'alive'
-                    message.pop(0)
-                    message.append(vote.p2 + ' revived')
+                    popup.pop(0)
+                    popup.append(vote.p2 + ' revived')
             if 'p3alive' in reply:
                 if 'dead' in p3_state:
                     p3_state.remove('dead')
                     p3_state.append('alive')
                     self_state[2] = 'alive'
-                    message.pop(0)
-                    message.append(vote.p3 + ' revived')
+                    popup.pop(0)
+                    popup.append(vote.p3 + ' revived')
             if 'p4alive' in reply:
                 if 'dead' in p4_state:
                     p4_state.remove('dead')
                     p4_state.append('alive')
                     self_state[3] = 'alive'
-                    message.pop(0)
-                    message.append(vote.p4 + ' revived')
+                    popup.pop(0)
+                    popup.append(vote.p4 + ' revived')
             if 'p5alive' in reply:
                 if 'dead' in p5_state:
                     p5_state.remove('dead')
                     p5_state.append('alive')
                     self_state[4] = 'alive'
-                    message.pop(0)
-                    message.append(vote.p5 + ' revived')
+                    popup.pop(0)
+                    popup.append(vote.p5 + ' revived')
         if 'night' in reply:
             time_state[0] = 'night'
             vote_chance[0] = 'vote'
@@ -952,7 +1006,7 @@ def sync():
 #           night_phase[0] = 'second'
 #        if 'night3' in reply:
 #            night_phase[0] = 'third'
-        time.sleep(2)
+        time.sleep(3)
 
 #def menu():
 #    run = True
@@ -1011,20 +1065,25 @@ def main():
         else:
             color = color_passive
         draw_window()
-        font = pygame.font.Font('freesansbold.ttf', 25)
+        font = pygame.font.Font('freesansbold.ttf', 28)
+        fontpop = pygame.font.Font('freesansbold.ttf', 23)
         if ready_chance[0] == 'notready':
             text_surface = base_font.render(vote.player_name, True, (255, 255, 255))
             pygame.draw.rect(WIN, color, input_rect)
             WIN.blit(text_surface, (input_rect.x+5, input_rect.y+5))
             input_rect.w = max(100, text_surface.get_width()+5)
-            enter = font.render('Enter name: ', True, green)
+            enter = font.render('Enter name: ', True, vote.textcolor)
             entername = enter.get_rect()
             entername.center = (155,447)
             WIN.blit(enter, entername)
-        text = font.render(message[0], True, green)
+        text = font.render(message[0], True, vote.textcolor)
+        textpop = fontpop.render(popup[0], True, vote.textcolor)
         textRect = text.get_rect()
+        textpopRect = textpop.get_rect()
         textRect.center = (WIDTH // 2, HEIGHT // 2)
+        textpopRect.center = (WIDTH // 2, HEIGHT // 1.8)
         WIN.blit(text, textRect)
+        WIN.blit(textpop, textpopRect)
         pygame.display.update()
     client_socket.close()
     pygame.quit()

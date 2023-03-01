@@ -10,6 +10,5 @@
 #if vote.readycount == 3:
 #sleep
 
-wew = '#pogi#fsfsdfs#1234123wer#dfdf'
-wews = wew.strip('#').split('#')
-print(wews)
+import sys
+print(sys.path)

@@ -58,6 +58,7 @@ sheriff = pygame.image.load(os.path.join(path,'sheriff.png'))
 doctor = pygame.image.load(os.path.join(path,'doctor.png'))
 fool = pygame.image.load(os.path.join(path,'fool.png'))
 hunter = pygame.image.load(os.path.join(path,'hunter.png'))
+logo = pygame.image.load(os.path.join(path,'logo.png'))
 
 wildcard = [fool, hunter]
 bad = [wolf, alpha, wolftrickster]
