@@ -141,76 +141,91 @@ def handle_client(tcp_socket):
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p2dead':
                         svrheartbeat = 'p2dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p3dead':
                         svrheartbeat = 'p3dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p4dead':
                         svrheartbeat = 'p4dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p5dead':
                         svrheartbeat = 'p5dead'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p1alive':
                         svrheartbeat = 'p1alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p2alive':
                         svrheartbeat = 'p2alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p3alive':
                         svrheartbeat = 'p3alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p4alive':
                         svrheartbeat = 'p4alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p5alive':
                         svrheartbeat = 'p5alive'
                         for c in clients:
                             c.send(svrheartbeat.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p1tricked':
                         trick = 'p1tricked'
                         for c in clients:
                             c.send(trick.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p2tricked':
                         trick = 'p2tricked'
                         for c in clients:
                             c.send(trick.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p3tricked':
                         trick = 'p3tricked'
                         for c in clients:
                             c.send(trick.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p4tricked':
                         trick = 'p4tricked'
                         for c in clients:
                             c.send(trick.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p5tricked':
                         trick = 'p5tricked'
                         for c in clients:
                             c.send(trick.encode('utf-8'))
                             time.sleep(0.02)
+                        svrheartbeat = 'sync'
                     if com.decode('utf-8') == 'p1voted':
                         vote.votes[0] += 1
                         print(vote.votes)

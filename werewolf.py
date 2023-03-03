@@ -34,6 +34,8 @@ check_chance = ['check']
 night_phase = ['first']
 game_start = ['menu']
 ready_chance = ['notready']
+winner = ['']
+wolf = 0
 
 #game starts here
 print('Welcome to Werewolf by Pugsitans')
@@ -83,10 +85,13 @@ for r in rolesplit:
         wroles.role[r1] = wroles.fool
     elif r == 'wolf':
         wroles.role[r1] = wroles.wolf
+        wolf = r1
     elif r == 'alpha':
         wroles.role[r1] = wroles.alpha
+        wolf = r1
     elif r == 'wolftrickster':
         wroles.role[r1] = wroles.wolftrickster
+        wolf = r1
     r1 += 1
 
 if players == 5:   
@@ -124,6 +129,11 @@ if players == 5:
                 tcp_socket.send(b'ready')
         elif game_start[0] == 'menu' and ready_chance[0] == 'ready':
             message[0] = 'Waiting for other players . . .'
+        elif game_start[0] == 'commence' and winner[0] == 'villagers':
+            message[0] = 'Villagers win!'
+            vote.textcolor = (0, 0, 139)
+            BG = (253, 218, 13)
+            WIN.fill(BG)
         elif game_start[0] == 'commence':
             pygame.display.set_caption("Werewolf")
             message[0] = 'Werewolf'
@@ -180,18 +190,18 @@ if players == 5:
                 vote.textcolor = (255, 211, 103)
                 if challenger == 1:
                     if switchtime1.draw_button(WIN):
+                        tcp_socket.send(b'day')
                         popup.pop(0)
                         popup.append('Here comes the sun')
-                        tcp_socket.send(b'day')
             elif time_state[0] == 'day':
-                BG = (255, 255, 51)
+                BG = (253, 218, 13)
                 WIN.fill(BG)
                 vote.textcolor = (0, 0, 139)
                 if challenger == 1:
                     if switchtime2.draw_button(WIN):
+                        tcp_socket.send(b'night')
                         popup.pop(0)
                         popup.append('Exit light')
-                        tcp_socket.send(b'night')
 
             #draws the highlight of your card
             if player_highlight.draw_button(WIN):
@@ -802,6 +812,7 @@ if players == 5:
                         popup.append(vote.p5 + ' already dead')
                         waction.action = ''
 
+
 def sync():
     time.sleep(3)
     
@@ -810,6 +821,7 @@ def sync():
         popup.append('')
         tcp_socket.send(b'sync')
         reply = tcp_socket.recv(512).decode('utf-8')
+        print(reply)
         if '#' in reply:
             if 'endmenu' in reply:
                 char = reply.replace('endmenu', '')
@@ -849,22 +861,24 @@ def sync():
                 char = reply.replace('p4tricked', '')
             if 'p5tricked' in reply:
                 char = reply.replace('p5tricked', '')
-            if 'p1lynched' in reply:
+            if 'p1lynch' in reply:
                 char = reply.replace('p1lynched', '')
-            if 'p2lynched' in reply:
+            if 'p2lynch' in reply:
                 char = reply.replace('p2lynched', '')
-            if 'p3lynched' in reply:
+            if 'p3lynch' in reply:
                 char = reply.replace('p3lynched', '')
-            if 'p4lynched' in reply:
+            if 'p4lynch' in reply:
                 char = reply.replace('p4lynched', '')
-            if 'p5lynched' in reply:
+            if 'p5lynch' in reply:
                 char = reply.replace('p5lynched', '')
             chars = char.strip('endmenu').strip('sync').strip('#').split('#')
             vote.p1 = chars[0][1:] or ''
             vote.p2 = chars[1][1:] or ''
+        #    vote.p3 = chars[0][1:] or ''
+        #    vote.p4 = chars[1][1:] or ''
+        #    vote.p5 = chars[1][1:] or ''
         if 'endmenu' in reply:
             game_start[0] = 'commence'
-            print(reply)
         if 'p1lynch' in reply:
             if 'alive' in p1_state:
                 p1_state.remove('alive')
@@ -872,6 +886,8 @@ def sync():
                 self_state[0] = 'dead'
                 popup.pop(0)
                 popup.append(vote.p1 + ' lynched')
+            if str(wolf) in reply:
+                winner[0] = 'villagers'
         if 'p2lynch' in reply:
             if 'alive' in p2_state:
                 p2_state.remove('alive')
@@ -879,6 +895,8 @@ def sync():
                 self_state[1] = 'dead'
                 popup.pop(0)
                 popup.append(vote.p2 + ' lynched')
+            if str(wolf) in reply:
+                winner[0] = 'villagers'
         if 'p3lynch' in reply:
             if 'alive' in p3_state:
                 p3_state.remove('alive')
@@ -886,6 +904,8 @@ def sync():
                 self_state[2] = 'dead'
                 popup.pop(0)
                 popup.append(vote.p3 + ' lynched')
+            if str(wolf) in reply:
+                winner[0] = 'villagers'
         if 'p4lynch' in reply:
             if 'alive' in p4_state:
                 p4_state.remove('alive')
@@ -893,6 +913,8 @@ def sync():
                 self_state[3] = 'dead'
                 popup.pop(0)
                 popup.append(vote.p4 + ' lynched')
+            if str(wolf) in reply:
+                winner[0] = 'villagers'
         if 'p5lynch' in reply:
             if 'alive' in p5_state:
                 p5_state.remove('alive')
@@ -900,6 +922,8 @@ def sync():
                 self_state[4] = 'dead'
                 popup.pop(0)
                 popup.append(vote.p5 + ' lynched')
+            if str(wolf) in reply:
+                winner[0] = 'villagers'
         #if 'votetie' in reply:
         #    popup.pop(0)
         #    popup.append('All players are safe... for now') 
@@ -913,6 +937,76 @@ def sync():
             p4_state.append('tricked')
         if 'p5tricked' in reply:
             p5_state.append('tricked')
+        if 'p1dead' in reply:
+            if 'alive' in p1_state:
+                p1_state.remove('alive')
+                p1_state.append('dead')
+                self_state[0] = 'dead'
+                popup.pop(0)
+                popup.append(vote.p1 + ' killed')
+        if 'p2dead' in reply:
+            if 'alive' in p2_state:
+                p2_state.remove('alive')
+                p2_state.append('dead')
+                self_state[1] = 'dead'
+                popup.pop(0)
+                popup.append(vote.p2 + ' killed')
+        if 'p3dead' in reply:
+            if 'alive' in p3_state:
+                p3_state.remove('alive')
+                p3_state.append('dead')
+                self_state[2] = 'dead'
+                popup.pop(0)
+                popup.append(vote.p3 + ' killed')
+        if 'p4dead' in reply:
+            if 'alive' in p4_state:
+                p4_state.remove('alive')
+                p4_state.append('dead')
+                self_state[3] = 'dead'
+                popup.pop(0)
+                popup.append(vote.p4 + ' killed')
+        if 'p5dead' in reply:
+            if 'alive' in p5_state:
+                p5_state.remove('alive')
+                p5_state.append('dead')
+                self_state[4] = 'dead'
+                popup.pop(0)
+                popup.append(vote.p5 + ' killed')
+        if 'p1alive' in reply:
+            if 'dead' in p1_state:
+                p1_state.remove('dead')
+                p1_state.append('alive')
+                self_state[0] = 'alive'
+                popup.pop(0)
+                popup.append(vote.p1 + ' revived')
+        if 'p2alive' in reply:
+            if 'dead' in p2_state:
+                p2_state.remove('dead')
+                p2_state.append('alive')
+                self_state[1] = 'alive'
+                popup.pop(0)
+                popup.append(vote.p2 + ' revived')
+        if 'p3alive' in reply:
+            if 'dead' in p3_state:
+                p3_state.remove('dead')
+                p3_state.append('alive')
+                self_state[2] = 'alive'
+                popup.pop(0)
+                popup.append(vote.p3 + ' revived')
+        if 'p4alive' in reply:
+            if 'dead' in p4_state:
+                p4_state.remove('dead')
+                p4_state.append('alive')
+                self_state[3] = 'alive'
+                popup.pop(0)
+                popup.append(vote.p4 + ' revived')
+        if 'p5alive' in reply:
+            if 'dead' in p5_state:
+                p5_state.remove('dead')
+                p5_state.append('alive')
+                self_state[4] = 'alive'
+                popup.pop(0)
+                popup.append(vote.p5 + ' revived')
         if 'day' in reply:
             time_state[0] = 'day'
             kill_chance[0] = 'kill'
@@ -928,76 +1022,6 @@ def sync():
                 p4_state.remove('tricked')
             elif 'tricked' in p5_state:
                 p5_state.remove('tricked')
-            if 'p1dead' in reply:
-                if 'alive' in p1_state:
-                    p1_state.remove('alive')
-                    p1_state.append('dead')
-                    self_state[0] = 'dead'
-                    popup.pop(0)
-                    popup.append(vote.p1 + ' killed')
-            if 'p2dead' in reply:
-                if 'alive' in p2_state:
-                    p2_state.remove('alive')
-                    p2_state.append('dead')
-                    self_state[1] = 'dead'
-                    popup.pop(0)
-                    popup.append(vote.p2 + ' killed')
-            if 'p3dead' in reply:
-                if 'alive' in p3_state:
-                    p3_state.remove('alive')
-                    p3_state.append('dead')
-                    self_state[2] = 'dead'
-                    popup.pop(0)
-                    popup.append(vote.p3 + ' killed')
-            if 'p4dead' in reply:
-                if 'alive' in p4_state:
-                    p4_state.remove('alive')
-                    p4_state.append('dead')
-                    self_state[3] = 'dead'
-                    popup.pop(0)
-                    popup.append(vote.p4 + ' killed')
-            if 'p5dead' in reply:
-                if 'alive' in p5_state:
-                    p5_state.remove('alive')
-                    p5_state.append('dead')
-                    self_state[4] = 'dead'
-                    popup.pop(0)
-                    popup.append(vote.p5 + ' killed')
-            if 'p1alive' in reply:
-                if 'dead' in p1_state:
-                    p1_state.remove('dead')
-                    p1_state.append('alive')
-                    self_state[0] = 'alive'
-                    popup.pop(0)
-                    popup.append(vote.p1 + ' revived')
-            if 'p2alive' in reply:
-                if 'dead' in p2_state:
-                    p2_state.remove('dead')
-                    p2_state.append('alive')
-                    self_state[1] = 'alive'
-                    popup.pop(0)
-                    popup.append(vote.p2 + ' revived')
-            if 'p3alive' in reply:
-                if 'dead' in p3_state:
-                    p3_state.remove('dead')
-                    p3_state.append('alive')
-                    self_state[2] = 'alive'
-                    popup.pop(0)
-                    popup.append(vote.p3 + ' revived')
-            if 'p4alive' in reply:
-                if 'dead' in p4_state:
-                    p4_state.remove('dead')
-                    p4_state.append('alive')
-                    self_state[3] = 'alive'
-                    popup.pop(0)
-                    popup.append(vote.p4 + ' revived')
-            if 'p5alive' in reply:
-                if 'dead' in p5_state:
-                    p5_state.remove('dead')
-                    p5_state.append('alive')
-                    self_state[4] = 'alive'
-                    popup.pop(0)
-                    popup.append(vote.p5 + ' revived')
         if 'night' in reply:
             time_state[0] = 'night'
             vote_chance[0] = 'vote'
@@ -1024,8 +1048,8 @@ def main():
     clock = pygame.time.Clock()
     base_font = pygame.font.Font(None, 32)
     input_rect = pygame.Rect(vote.rectx, vote.recty, vote.recta, vote.rectb)
-    color_active = pygame.Color('lightskyblue3')
-    color_passive = pygame.Color('chartreuse4')
+    color_active = pygame.Color(165,3,192)
+    color_passive = pygame.Color(123,2,144)
     color = color_passive
     run = True
     while run:
@@ -1040,7 +1064,7 @@ def main():
                 else:
                     vote.active = False
     
-            if event.type == pygame.KEYDOWN:
+            if color == color_active and event.type == pygame.KEYDOWN:
                 
                 if event.key == pygame.K_RETURN: 
                     ready_chance[0] = 'ready'
