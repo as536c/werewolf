@@ -9,6 +9,7 @@ import threading
 import socket
 import vote
 
+#test commit
 #background variables
 BG = (0, 0, 139)
 FPS = 10
